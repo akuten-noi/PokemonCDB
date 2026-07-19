@@ -724,10 +724,16 @@ function moveExtraHtml(name,info){
 
 function moveMeta(name){return MOVE_INFO[name]||{category:"分類未確認",type:"不明",power:null,accuracy:null,pp:null,priority:0}}
 function val(v){return v===null||v===undefined?"—":v}
-function sortMovesAiueo(list){
+function sortMovesByType(list){
   return [...list]
     .map(name=>({name,info:moveMeta(name)}))
-    .sort((a,b)=>a.name.localeCompare(b.name,"ja",{sensitivity:"base",numeric:true}));
+    .sort((a,b)=>{
+      const aTypeIndex=TYPE_ORDER.indexOf(typeKey(a.info.type));
+      const bTypeIndex=TYPE_ORDER.indexOf(typeKey(b.info.type));
+      const aOrder=aTypeIndex===-1?TYPE_ORDER.length:aTypeIndex;
+      const bOrder=bTypeIndex===-1?TYPE_ORDER.length:bTypeIndex;
+      return aOrder-bOrder||a.name.localeCompare(b.name,"ja",{sensitivity:"base",numeric:true});
+    });
 }
 function moveListHtml(items){
   if(!items.length)return "";
@@ -748,7 +754,7 @@ function moveListHtml(items){
 function renderDetail(){
   const p=POKEMON.find(x=>x.name===selected);if(!p)return;
   const shown=p.moves.filter(m=>norm(m).includes(norm(moveQuery)));
-  const sortedMoves=sortMovesAiueo(shown);
+  const sortedMoves=sortMovesByType(shown);
   detailEl.innerHTML=`<div class="head"><div><h2 class="name">${p.name}</h2><div class="chips">${p.types.map(t=>typeBadge(t,"chip")).join("")}</div></div><span class="dex">No.${p.dex}</span></div>
   ${matchupHtml(p.types)}
   <section class="section"><h2>能力値</h2><div class="stats">${Object.entries(p.stats).map(([k,v])=>`<div class="stat"><div class="label">${statLabels[k]}</div><div class="value">${p.name==="ヌケニン"&&k==="hp"?1:v+(k==="hp"?75:20)}</div></div>`).join("")}</div></section>
@@ -763,7 +769,7 @@ function renderDetail(){
     </div>`).join("")}</div></section>
   <section class="section"><div class="moves-head"><div><h2 style="margin:0">使用可能な技</h2><div class="help">全 ${p.moves.length} 技／表示 ${shown.length} 技</div></div><input id="moveSearch" class="move-search" type="search" value="${moveQuery}" placeholder="技名を検索"></div>
   <div class="move-groups">${moveListHtml(sortedMoves)}${shown.length?"":'<div class="empty">該当する技がありません。</div>'}</div></section>
-  <div class="footer">収録フォーム数：${POKEMON.length}／使用可能技：${p.moves.length}。技は五十音順です。技名をタップすると、効果・対象・タグを表示します。</div>`;
+  <div class="footer">収録フォーム数：${POKEMON.length}／使用可能技：${p.moves.length}。技はタイプ順（同タイプ内は五十音順）です。技名をタップすると、効果・対象・タグを表示します。</div>`;
   const ms=document.getElementById("moveSearch");
   ms.addEventListener("input",e=>{moveQuery=e.target.value;renderDetail();const a=document.getElementById("moveSearch");a.focus();a.setSelectionRange(a.value.length,a.value.length)});
   detailEl.querySelectorAll(".move-button").forEach(b=>b.addEventListener("click",()=>{const i=b.closest(".move-item");const open=i.classList.toggle("open");b.setAttribute("aria-expanded",String(open))}))
