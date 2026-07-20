@@ -809,6 +809,58 @@ Object.assign(MOVE_EFFECTS, {
   "ツインパニッシャー":{target:"1体選択",effect:"2回連続で攻撃する。"}
 });
 
+// ===== 指定13項目の追加補正 =====
+Object.assign(MOVE_EFFECTS, {
+  "ゲップ":{target:"1体選択",effect:"この対戦中に自分がきのみを食べていない場合は失敗する。きのみを食べた後は使用できる。"},
+  "サイコファング":{target:"1体選択",effect:"攻撃後（命中時）、相手の場のリフレクター・ひかりのかべ・オーロラベールを解除する。"},
+  "おはかまいり":{target:"1体選択",effect:"ひんしになった味方の数が多いほど威力が上がる。ひんしになった味方1体につき威力が50上がる。"},
+  "じゅうでん":{target:"自分",effect:"自分の特防を1段階上げる。次に自分が使うでんきタイプの技の威力を2倍にする。"},
+  "ライジングボルト":{target:"1体選択",effect:"エレキフィールド中、地面にいる相手に使うと威力が2倍になる。"},
+  "いかりのまえば":{target:"1体選択",effect:"相手の残りHPの半分のダメージを与える。ダメージは切り捨てで、最低1ダメージ。"},
+  "さわぐ":{target:"相手1体（ランダム）",effect:"3ターンの間、相手1体をランダムに選んで攻撃し続ける。その間、場にいるポケモンはねむり状態にならず、ねむり状態のポケモンは目を覚ます。"},
+  "きゅうけつ":{target:"1体選択",effect:"相手に与えたダメージの1/2だけ自分のHPを回復する。"},
+  "はがねのつばさ":{target:"1体選択",effect:"攻撃後（命中時）、10%の確率で自分の防御を1段階上げる。"},
+  "クロスポイズン":{target:"1体選択",effect:"急所に当たりやすい。攻撃後（命中時）、10%の確率で相手をどく状態にする。"},
+  "ＤＤラリアット":{target:"1体選択",effect:"相手の能力ランクの変化を無視してダメージを与える。"},
+  "てっていこうせん":{target:"1体選択",effect:"使用後、自分の最大HPの1/2を失う。"},
+  "あばれる":{target:"相手1体（ランダム）",effect:"2～3ターンの間、相手1体をランダムに選んで攻撃し続ける。終了後、自分はこんらん状態になる。"},
+  "げきりん":{target:"相手1体（ランダム）",effect:"2～3ターンの間、相手1体をランダムに選んで攻撃し続ける。終了後、自分はこんらん状態になる。"},
+  "だいふんげき":{target:"相手1体（ランダム）",effect:"2～3ターンの間、相手1体をランダムに選んで攻撃し続ける。終了後、自分はこんらん状態になる。"},
+  "はなびらのまい":{target:"相手1体（ランダム）",effect:"2～3ターンの間、相手1体をランダムに選んで攻撃し続ける。終了後、自分はこんらん状態になる。"},
+  "ついばむ":{target:"1体選択",effect:"相手がきのみを持っている場合、そのきのみを食べて効果を受ける。"},
+  "とどめばり":{target:"1体選択",effect:"この技で相手をひんしにすると、自分の攻撃が3段階上がる。"},
+  "であいがしら":{target:"1体選択",effect:"場に出た最初のターンだけ使用できる。優先度+2。"},
+  "むしくい":{target:"1体選択",effect:"相手がきのみを持っている場合、そのきのみを食べて効果を受ける。"},
+  "むしのていこう":{target:"相手全体",effect:"攻撃後（命中時）、相手の特攻を1段階下げる。"},
+  "どくのいと":{target:"1体選択",effect:"相手をどく状態にし、素早さを1段階下げる。"},
+  "しっとのほのお":{target:"相手全体",effect:"そのターンに能力が上がった相手をやけど状態にする。"},
+  "マジックルーム":{target:"全体",effect:"5ターンの間、すべてのポケモンの持ち物の効果を無効にする。もう一度使うと元に戻る。"},
+  "いちゃもん":{target:"1体選択",effect:"相手を、同じ技を連続して使えない状態にする。"},
+  "とびひざげり":{target:"1体選択",effect:"技が外れた場合、自分の最大HPの1/2のダメージを受ける。"},
+  "かかとおとし":{target:"1体選択",effect:"攻撃後（命中時）、30%の確率で相手をこんらん状態にする。技が外れた場合、自分の最大HPの1/2のダメージを受ける。"},
+  "ゴッドバード":{target:"1体選択",effect:"1ターン目に構え、2ターン目に攻撃する。急所に当たりやすく、攻撃後（命中時）、30%の確率で相手をひるませる。"},
+  "コーチング":{target:"自分以外の味方全体",effect:"自分以外の味方の攻撃と防御を1段階ずつ上げる。"},
+  "ふういん":{target:"1体選択",effect:"自分が覚えている技と同じ技を、相手が使用できない状態にする。使用者が場を離れると解除される。"},
+  "いかりのこな":{target:"自分",effect:"優先度+2。そのターン、相手が使う1体選択の技を自分に引き寄せる。"},
+  "このゆびとまれ":{target:"自分",effect:"優先度+2。そのターン、相手が使う1体選択の技を自分に引き寄せる。"},
+  "ナイトヘッド":{target:"1体選択",effect:"50ダメージを与える。"}
+});
+
+// 同じ攻撃範囲の表記を「自分以外全体」に統一
+Object.keys(MOVE_TARGETS).forEach(name=>{
+  if(MOVE_TARGETS[name]==="自分以外"||MOVE_TARGETS[name]==="全体（自分以外）") MOVE_TARGETS[name]="自分以外全体";
+});
+Object.keys(MOVE_EFFECTS).forEach(name=>{
+  if(MOVE_EFFECTS[name].target==="自分以外"||MOVE_EFFECTS[name].target==="全体（自分以外）") MOVE_EFFECTS[name].target="自分以外全体";
+});
+["じしん","ヘドロウェーブ","ぶんまわす","なみのり","じならし","じばく","だいばくはつ","マグニチュード","かえんだん","パラボラチャージ","はなふぶき","ばくおんぱ","うたかたのアリア","ビックリヘッド","ミストバースト","ふしょくガス","フラフラダンス"].forEach(name=>{
+  MOVE_TARGETS[name]="自分以外全体";
+  if(MOVE_EFFECTS[name]) MOVE_EFFECTS[name].target="自分以外全体";
+});
+
+// ランダム対象技の表記を統一
+["あばれる","げきりん","だいふんげき","はなびらのまい","さわぐ"].forEach(name=>MOVE_TARGETS[name]="相手1体（ランダム）");
+
 // 命中後に次のターン行動不能となる技の文章を統一
 ["はかいこうせん","ギガインパクト","ハイドロカノン","ハードプラント","ブラストバーン","がんせきほう","ときのほうこう","スターアサルト","ムゲンダイビーム","メテオアサルト","プリズムレーザー"].forEach(name=>{
   const base=MOVE_EFFECTS[name]||{};
@@ -850,7 +902,7 @@ POWDER_MOVES_EXACT.delete("かえんほうしゃ");
 function defaultTarget(info){if(info.category==="変化")return "技による";return "1体選択"}
 function inferredTags(name,info){
  const tags=[];
- if(CONTACT_NAMES.has(name)) tags.push("接触技","かたいつめ");
+ if(CONTACT_NAMES.has(name)) tags.push("接触技");
  if(PUNCH_FLAG_MOVES.has(name)||PUNCH_MOVES_EXACT.has(name)) tags.push("てつのこぶし");
  if(BITE_FLAG_MOVES.has(name)||BITE_MOVES_EXACT.has(name)) tags.push("がんじょうあご");
  if(CUTTING_MOVES.has(name)) tags.push("きれあじ");
@@ -873,6 +925,7 @@ function normalizeMoveEffectText(text){
  out=out.replace(/\s*ダブルバトルで複数のポケモンを対象にした場合、各対象へのダメージは通常の0\.75倍になる。/g,"");
  out=out.replace(/\s*ダブルバトルでは複数対象補正を受ける。/g,"");
  out=out.replace(/\s*ダブルバトルで複数対象補正を受ける。/g,"");
+ out=out.replace(/\s*野生ポケモンとの戦闘では戦闘を終了させる。/g,"");
  // 自分への能力下降・反動は命中時にだけ発動することを明示する。
  out=out.replace(/^攻撃後、自分の(攻撃|防御|特攻|特防|素早さ)/,"攻撃後（命中時）、自分の$1");
  out=out.replace(/^攻撃後、自分の攻撃と防御/,"攻撃後（命中時）、自分の攻撃と防御");
@@ -892,7 +945,9 @@ function defenseInteractionFlags(name,info,target){
 function moveExtended(name,info){
  const known={...(MOVE_EFFECTS[name]||{}),...(STATUS_EFFECT_OVERRIDES[name]||{}),...(MOVE_DETAIL_CORRECTIONS[name]||{}),...(COMPLETE_MOVE_EFFECTS[name]||{})};
  const rawTarget=known.target||MOVE_TARGETS[name]||defaultTarget(info);
- const target=rawTarget==="相手または味方1体"?"1体選択":rawTarget;
+ let target=rawTarget==="相手または味方1体"?"1体選択":rawTarget;
+ if(target==="自分以外"||target==="全体（自分以外）") target="自分以外全体";
+ if(target==="1体選択（ランダム）") target="相手1体（ランダム）";
  let effect=known.effect||"";
  effect=normalizeMoveEffectText(effect);
  const rawTags=[...(known.tags||[]),...inferredTags(name,info)];
@@ -900,7 +955,6 @@ function moveExtended(name,info){
  const add=t=>{if(t&&!other.includes(t))other.push(t)};
  rawTags.forEach(t=>{
    if(/接触/.test(t)) add("接触技");
-   if(/かたいツメ|かたいつめ/.test(t)) add("かたいつめ");
    if(/きれあじ/.test(t)) add("きれあじ");
    if(/がんじょうあご/.test(t)) add("がんじょうあご");
    if(/ちからずく/.test(t)) add("ちからずく");
@@ -915,8 +969,9 @@ function moveExtended(name,info){
    if(/まもる貫通/.test(t)) add("まもる貫通");
  });
  defenseInteractionFlags(name,info,target).forEach(add);
+ if((info.priority||0)>0) add("先制技");
  if(ALWAYS_HIT_MOVES.has(name) && !/必中|必ず命中/.test(effect)) effect=[effect,"必中技。命中率・回避率の変化に関係なく命中する。"].filter(Boolean).join(" ");
- if(DOUBLE_ONLY_MOVES.has(name) && !/ダブルバトル|シングルバトル/.test(effect)) effect=[effect,"ダブルバトルで味方を対象にして使うことを前提とした技。シングルバトルでは効果を活かせない、または失敗する場合がある。"].filter(Boolean).join(" ");
+ if(DOUBLE_ONLY_MOVES.has(name) && !["いかりのこな","このゆびとまれ"].includes(name) && !/ダブルバトル|シングルバトル/.test(effect)) effect=[effect,"ダブルバトルで味方を対象にして使うことを前提とした技。シングルバトルでは効果を活かせない、または失敗する場合がある。"].filter(Boolean).join(" ");
  if(info.category!=="変化") POWER_ABILITY_NOTES.forEach(rule=>{if(rule.test(name)){
    if(/てつのこぶし/.test(rule.text)) add("てつのこぶし");
    if(/がんじょうあご/.test(rule.text)) add("がんじょうあご");
