@@ -128,10 +128,12 @@ input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:
 .move-name{flex:0 0 12em;font-size:.88rem;line-height:1.3}
 .move-category{min-width:42px;padding:1px 6px;font-size:.66rem}
 .move-type.type-badge{min-width:50px;padding:2px 7px;font-size:.66rem}
-.move-detail{display:grid!important;grid-template-columns:220px minmax(0,1fr);gap:8px;padding:0 9px 8px;background:#fff}
-.move-specs{grid-template-columns:repeat(4,minmax(42px,1fr));gap:4px;align-self:start}
-.move-spec{border-radius:7px;padding:5px 3px;font-size:.78rem}
+.move-detail{display:grid!important;grid-template-columns:1fr;gap:5px;padding:0 9px 8px;background:#fff}
+.move-specs{display:grid;grid-template-columns:repeat(4,minmax(42px,.72fr)) minmax(92px,1.65fr);gap:4px;align-self:start}
+.move-spec{min-width:0;border-radius:7px;padding:5px 3px;font-size:.78rem}
 .move-spec .label{font-size:.66rem;line-height:1.15}
+.move-spec-target{padding-left:5px;padding-right:5px}
+.move-spec-target>div:last-child{font-size:.72rem;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .move-extra{margin-top:0;gap:5px}
 .move-extra-row{display:grid;grid-template-columns:92px minmax(0,1fr);align-items:start;gap:7px;border-radius:7px;padding:5px 7px}
 .move-extra-label{margin:0;font-size:.68rem;line-height:1.45}
@@ -140,12 +142,16 @@ input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:
 .move-tag{min-height:20px;padding:1px 7px;font-size:.68rem}
 .move-note{margin-top:4px;font-size:.68rem;line-height:1.4}
 .moves-head{margin-bottom:6px}.move-search{padding:7px 9px}.move-groups{gap:8px!important}
-@media(max-width:900px){.move-detail{grid-template-columns:190px minmax(0,1fr)}.move-name{flex-basis:10em}}
+@media(max-width:900px){.move-name{flex-basis:10em}}
 @media(max-width:680px){
   .move-summary{flex-wrap:wrap;padding:7px 8px 4px}
   .move-name{flex:1 1 100%;font-size:.9rem}
   .move-detail{grid-template-columns:1fr;padding:0 8px 8px}
-  .move-specs{grid-template-columns:repeat(4,1fr)}
+  .move-specs{grid-template-columns:repeat(4,minmax(34px,.72fr)) minmax(86px,1.65fr);gap:3px}
+  .move-spec{padding:5px 2px;font-size:.72rem}
+  .move-spec .label{font-size:.6rem}
+  .move-spec-target{padding-left:3px;padding-right:3px}
+  .move-spec-target>div:last-child{font-size:.65rem}
   .move-extra-row{grid-template-columns:76px minmax(0,1fr)}
 }
 
@@ -219,6 +225,19 @@ input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:
   .move-summary{flex-wrap:wrap}.move-name{flex:1 0 100%}.move-search{max-width:150px}
 }
 
+
+/* 覚える技：技名・タイプ・分類・重要タグを1行に統合 */
+.move-summary{flex-wrap:wrap;align-items:center;gap:5px 6px}
+.move-name{flex:0 0 auto;min-width:10em}
+.move-header-tags{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px;min-width:0}
+.move-summary .move-tag{min-height:20px;padding:1px 7px;font-size:.68rem}
+.move-extra{grid-column:auto}
+.moves-head{justify-content:flex-start}
+@media(max-width:680px){
+  .move-summary{padding:7px 8px 5px}
+  .move-name{flex:0 0 100%;min-width:0}
+  .move-header-tags{flex:1 1 100%}
+}
 </style>
 </head>
 <body>
@@ -965,11 +984,9 @@ function moveExtended(name,info){
    if(/ぼうじん|粉技/.test(t)) add("ぼうじん無効");
    if(/ぼうだん/.test(t)) add("ぼうだん無効");
    if(/マジックミラー/.test(t)) add("マジックミラーで反射");
-   if(/ダブル専用/.test(t)) add("ダブル専用");
    if(/まもる貫通/.test(t)) add("まもる貫通");
  });
  defenseInteractionFlags(name,info,target).forEach(add);
- if((info.priority||0)>0) add("先制技");
  if(ALWAYS_HIT_MOVES.has(name) && !/必中|必ず命中/.test(effect)) effect=[effect,"必中技。命中率・回避率の変化に関係なく命中する。"].filter(Boolean).join(" ");
  if(DOUBLE_ONLY_MOVES.has(name) && !["いかりのこな","このゆびとまれ"].includes(name) && !/ダブルバトル|シングルバトル/.test(effect)) effect=[effect,"ダブルバトルで味方を対象にして使うことを前提とした技。シングルバトルでは効果を活かせない、または失敗する場合がある。"].filter(Boolean).join(" ");
  if(info.category!=="変化") POWER_ABILITY_NOTES.forEach(rule=>{if(rule.test(name)){
@@ -981,11 +998,14 @@ function moveExtended(name,info){
  effect=normalizeMoveEffectText(effect);
  return {target,effect,other,verified:!!effect};
 }
+const MOVE_HEADER_TAGS=new Set(["マジックミラーで反射","接触技","メガランチャー","きれあじ","みがわり貫通","ぼうおん無効","ぼうじん無効","ぼうだん無効","まもる貫通","がんじょうあご","ちからずく"]);
+function moveHeaderTags(name,info){
+ return moveExtended(name,info).other.filter(t=>MOVE_HEADER_TAGS.has(t));
+}
 function moveExtraHtml(name,info){
  const ex=moveExtended(name,info);
  const effect=ex.verified?`<div class="move-extra-row"><div class="move-extra-label">効果・追加効果</div><div class="move-extra-text">${ex.effect}</div></div>`:"";
- const other=ex.other.length?`<div class="move-extra-row"><div class="move-extra-label">補足</div><div class="move-tags">${ex.other.map(t=>`<span class="move-tag">${t}</span>`).join("")}</div></div>`:"";
- return `<div class="move-extra"><div class="move-extra-row"><div class="move-extra-label">対象</div><div class="move-extra-text">${ex.target}</div></div>${effect}${other}</div>`;
+ return effect?`<div class="move-extra">${effect}</div>`:"";
 }
 
 function moveMeta(name){return MOVE_INFO[name]||{category:"分類未確認",type:"不明",power:null,accuracy:null,pp:null,priority:0}}
@@ -1004,20 +1024,21 @@ function sortMovesByType(list){
 function moveListHtml(items){
   if(!items.length)return "";
   return `<div class="move-group all-moves"><h3><span>【技一覧】</span><span>${items.length}個</span></h3><ul class="move-list">${
-    items.map(({name,info})=>`<li class="move-item">
-      <div class="move-summary"><span class="move-name">${name}</span><span class="move-category">【${info.category}】</span>${typeBadge(info.type,"move-type")}</div>
+    items.map(({name,info})=>{const headerTags=moveHeaderTags(name,info);const ex=moveExtended(name,info);return `<li class="move-item">
+      <div class="move-summary"><span class="move-name">${name}</span>${typeBadge(info.type,"move-type")}<span class="move-category">【${info.category}】</span>${headerTags.length?`<span class="move-header-tags">${headerTags.map(t=>`<span class="move-tag">${t}</span>`).join("")}</span>`:""}</div>
       <div class="move-detail"><div class="move-specs">
         <div class="move-spec"><div class="label">威力</div><div>${val(info.power)}</div></div>
         <div class="move-spec"><div class="label">命中</div><div>${val(info.accuracy)}</div></div>
         <div class="move-spec"><div class="label">PP</div><div>${val(info.pp)}</div></div>
         <div class="move-spec"><div class="label">優先度</div><div>${info.priority>0?"+":""}${info.priority}</div></div>
+        <div class="move-spec move-spec-target" title="${ex.target}"><div class="label">対象</div><div>${ex.target}</div></div>
       </div>${moveExtraHtml(name,info)}</div>
-    </li>`).join("")
+    </li>`}).join("")
   }</ul></div>`
 }
 function renderDetail(){
   const p=POKEMON.find(x=>x.name===selected);if(!p)return;
-  const shown=p.moves.filter(m=>norm(m).includes(norm(moveQuery)));
+  const shown=p.moves;
   const sortedMoves=sortMovesByType(shown);
   detailEl.innerHTML=`<div class="head"><div><h2 class="name">${p.name}</h2><div class="chips">${p.types.map(t=>typeBadge(t,"chip")).join("")}</div></div><span class="dex">No.${p.dex}</span></div>
   <div class="detail-tabs" role="tablist" aria-label="ポケモン詳細の表示切り替え">
@@ -1039,8 +1060,8 @@ function renderDetail(){
     </div>
   </div>
   <div class="detail-tab-panel ${activeDetailTab==="moves"?"active":""}" data-panel="moves">
-    <section class="section"><div class="moves-head"><div><h2 style="margin:0">使用可能な技</h2><div class="help">全 ${p.moves.length} 技／表示 ${shown.length} 技</div></div><input id="moveSearch" class="move-search" type="search" value="${moveQuery}" placeholder="技名を検索"></div>
-    <div class="move-groups">${moveListHtml(sortedMoves)}${shown.length?"":'<div class="empty">該当する技がありません。</div>'}</div></section>
+    <section class="section"><div class="moves-head"><div><h2 style="margin:0">使用可能な技</h2><div class="help">全 ${p.moves.length} 技</div></div></div>
+    <div class="move-groups">${moveListHtml(sortedMoves)}</div></section>
   </div>
   <div class="detail-tab-panel ${activeDetailTab==="builds"?"active":""}" data-panel="builds">
     <section class="build-guide"><h2>育成論</h2><p>このポケモンの想定型を掲載するためのタブです。今後、役割・性格・持ち物・技構成・能力調整・立ち回りなどを追加できます。</p>
@@ -1049,8 +1070,6 @@ function renderDetail(){
   </div>
   <div class="footer">収録フォーム数：${POKEMON.length}／使用可能技：${p.moves.length}。上部タブで基本情報・覚える技・育成論を切り替えられます。</div>`;
   detailEl.querySelectorAll(".detail-tab").forEach(tab=>tab.addEventListener("click",()=>{activeDetailTab=tab.dataset.tab;renderDetail()}));
-  const ms=document.getElementById("moveSearch");
-  if(ms)ms.addEventListener("input",e=>{moveQuery=e.target.value;renderDetail();const a=document.getElementById("moveSearch");if(a){a.focus();a.setSelectionRange(a.value.length,a.value.length)}});
 }
 function setListOpen(open){listOpen=Boolean(open);listEl.hidden=!listOpen;layoutEl.classList.toggle("list-open",listOpen);listToggleEl.setAttribute("aria-expanded",String(listOpen));listToggleEl.textContent=listOpen?"ポケモン一覧を閉じる":"ポケモン一覧を表示"}
 function render(){renderList();renderDetail()}
