@@ -105,6 +105,49 @@ input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:
 .ability-info-body{line-height:1.72;color:#202631}
 .ability-info-list{margin:0;padding-left:1.25rem;display:grid;gap:4px}
 
+
+/* ポケモン詳細タブ */
+.detail-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:18px 0 4px;padding:6px;background:#eef3fb;border:1px solid var(--line);border-radius:14px;position:sticky;top:8px;z-index:20;box-shadow:0 4px 14px rgba(28,48,86,.08)}
+.detail-tab{border:0;border-radius:10px;padding:11px 10px;background:transparent;color:var(--muted);font-weight:800;font-size:.92rem;cursor:pointer;line-height:1.35}
+.detail-tab:hover{background:rgba(255,255,255,.72);color:var(--text)}
+.detail-tab.active{background:#fff;color:#1f5fc4;box-shadow:0 2px 8px rgba(31,95,196,.14)}
+.detail-tab-panel{display:none}.detail-tab-panel.active{display:block}
+.build-guide{margin-top:20px;border:1px solid var(--line);border-radius:14px;background:#fbfcfe;padding:18px}
+.build-guide h2{margin:0 0 8px;font-size:1.1rem}.build-guide p{margin:0;color:var(--muted);line-height:1.75}
+.build-placeholder-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}
+.build-placeholder{border:1px dashed #bcc8da;border-radius:12px;padding:14px;background:#fff}.build-placeholder strong{display:block;margin-bottom:5px}
+@media(max-width:800px){.detail-tabs{position:static;grid-template-columns:1fr}.build-placeholder-grid{grid-template-columns:1fr}}
+
+
+/* 覚える技：説明を常時表示するコンパクトレイアウト */
+.move-group{border-radius:10px}
+.move-group h3{padding:7px 10px;font-size:.86rem}
+.move-item{padding:0;background:#fff}
+.move-summary{display:flex;align-items:center;gap:6px;padding:7px 9px 5px;background:#fff}
+.move-name{flex:0 0 12em;font-size:.88rem;line-height:1.3}
+.move-category{min-width:42px;padding:1px 6px;font-size:.66rem}
+.move-type.type-badge{min-width:50px;padding:2px 7px;font-size:.66rem}
+.move-detail{display:grid!important;grid-template-columns:220px minmax(0,1fr);gap:8px;padding:0 9px 8px;background:#fff}
+.move-specs{grid-template-columns:repeat(4,minmax(42px,1fr));gap:4px;align-self:start}
+.move-spec{border-radius:7px;padding:5px 3px;font-size:.78rem}
+.move-spec .label{font-size:.66rem;line-height:1.15}
+.move-extra{margin-top:0;gap:5px}
+.move-extra-row{display:grid;grid-template-columns:92px minmax(0,1fr);align-items:start;gap:7px;border-radius:7px;padding:5px 7px}
+.move-extra-label{margin:0;font-size:.68rem;line-height:1.45}
+.move-extra-text{font-size:.78rem;line-height:1.45}
+.move-tags{gap:4px}
+.move-tag{min-height:20px;padding:1px 7px;font-size:.68rem}
+.move-note{margin-top:4px;font-size:.68rem;line-height:1.4}
+.moves-head{margin-bottom:6px}.move-search{padding:7px 9px}.move-groups{gap:8px!important}
+@media(max-width:900px){.move-detail{grid-template-columns:190px minmax(0,1fr)}.move-name{flex-basis:10em}}
+@media(max-width:680px){
+  .move-summary{flex-wrap:wrap;padding:7px 8px 4px}
+  .move-name{flex:1 1 100%;font-size:.9rem}
+  .move-detail{grid-template-columns:1fr;padding:0 8px 8px}
+  .move-specs{grid-template-columns:repeat(4,1fr)}
+  .move-extra-row{grid-template-columns:76px minmax(0,1fr)}
+}
+
 </style>
 </head>
 <body>
@@ -226,6 +269,7 @@ POKEMON.sort((a,b)=>{
   return nameCollator.compare(a.name,b.name);
 });
 let selected=POKEMON[0]?.name||"",query="",typeFilter="",moveQuery="";
+let activeDetailTab="overview";
 const listEl=document.getElementById("list"),detailEl=document.getElementById("detail"),searchEl=document.getElementById("search"),typeEl=document.getElementById("typeFilter");
 [...new Set(POKEMON.flatMap(p=>p.types))].sort().forEach(type=>{const o=document.createElement("option");o.value=type;o.textContent=TYPE_JA[type]||type;typeEl.appendChild(o)});
 function hiraToKata(v){return String(v||"").replace(/[ぁ-ゖ]/g,ch=>String.fromCharCode(ch.charCodeAt(0)+0x60))}
@@ -739,10 +783,8 @@ function moveListHtml(items){
   if(!items.length)return "";
   return `<div class="move-group all-moves"><h3><span>【技一覧】</span><span>${items.length}個</span></h3><ul class="move-list">${
     items.map(({name,info})=>`<li class="move-item">
-      <button class="move-button" type="button" aria-expanded="false"><span class="move-name">${name}</span><span class="move-category">【${info.category}】</span>${typeBadge(info.type,"move-type")}</button>
+      <div class="move-summary"><span class="move-name">${name}</span><span class="move-category">【${info.category}】</span>${typeBadge(info.type,"move-type")}</div>
       <div class="move-detail"><div class="move-specs">
-        <div class="move-spec"><div class="label">タイプ</div><div>${typeBadge(info.type)}</div></div>
-        <div class="move-spec"><div class="label">分類</div><div>${info.category}</div></div>
         <div class="move-spec"><div class="label">威力</div><div>${val(info.power)}</div></div>
         <div class="move-spec"><div class="label">命中</div><div>${val(info.accuracy)}</div></div>
         <div class="move-spec"><div class="label">PP</div><div>${val(info.pp)}</div></div>
@@ -756,23 +798,31 @@ function renderDetail(){
   const shown=p.moves.filter(m=>norm(m).includes(norm(moveQuery)));
   const sortedMoves=sortMovesByType(shown);
   detailEl.innerHTML=`<div class="head"><div><h2 class="name">${p.name}</h2><div class="chips">${p.types.map(t=>typeBadge(t,"chip")).join("")}</div></div><span class="dex">No.${p.dex}</span></div>
-  ${matchupHtml(p.types)}
-  <section class="section"><h2>能力値</h2><div class="stats">${Object.entries(p.stats).map(([k,v])=>`<div class="stat"><div class="label">${statLabels[k]}</div><div class="value">${p.name==="ヌケニン"&&k==="hp"?1:v+(k==="hp"?75:20)}</div></div>`).join("")}</div></section>
-  <section class="section"><h2>素早さ（こだわりスカーフ持ち時）</h2><div class="speed-grid">${speeds(p.stats.spe).map(([l,v])=>`<div class="speed"><div class="label">${l}</div><div class="value">${v}（${Math.floor(v*1.5)}）</div></div>`).join("")}</div></section>
-  <section class="section"><h2>特性</h2><p class="help">特性名をタップすると、対戦向けの効果と必要な補足を表示します。</p><div class="abilities">${p.abilities.map(a=>`
-    <div class="ability-item">
-      <button class="ability-button" type="button" aria-expanded="false">
-        <span class="ability-name">${a}</span>
-        <span class="ability-toggle">説明を見る</span>
-      </button>
-      <div class="ability-detail">${renderAbilityInfo(a)}</div>
-    </div>`).join("")}</div></section>
-  <section class="section"><div class="moves-head"><div><h2 style="margin:0">使用可能な技</h2><div class="help">全 ${p.moves.length} 技／表示 ${shown.length} 技</div></div><input id="moveSearch" class="move-search" type="search" value="${moveQuery}" placeholder="技名を検索"></div>
-  <div class="move-groups">${moveListHtml(sortedMoves)}${shown.length?"":'<div class="empty">該当する技がありません。</div>'}</div></section>
-  <div class="footer">収録フォーム数：${POKEMON.length}／使用可能技：${p.moves.length}。技はタイプ順（同タイプ内は五十音順）です。技名をタップすると、効果・対象・タグを表示します。</div>`;
+  <div class="detail-tabs" role="tablist" aria-label="ポケモン詳細の表示切り替え">
+    <button class="detail-tab ${activeDetailTab==="overview"?"active":""}" type="button" role="tab" aria-selected="${activeDetailTab==="overview"}" data-tab="overview">基本情報</button>
+    <button class="detail-tab ${activeDetailTab==="moves"?"active":""}" type="button" role="tab" aria-selected="${activeDetailTab==="moves"}" data-tab="moves">覚える技</button>
+    <button class="detail-tab ${activeDetailTab==="builds"?"active":""}" type="button" role="tab" aria-selected="${activeDetailTab==="builds"}" data-tab="builds">育成論</button>
+  </div>
+  <div class="detail-tab-panel ${activeDetailTab==="overview"?"active":""}" data-panel="overview">
+    ${matchupHtml(p.types)}
+    <section class="section"><h2>能力値</h2><div class="stats">${Object.entries(p.stats).map(([k,v])=>`<div class="stat"><div class="label">${statLabels[k]}</div><div class="value">${p.name==="ヌケニン"&&k==="hp"?1:v+(k==="hp"?75:20)}</div></div>`).join("")}</div></section>
+    <section class="section"><h2>素早さ（こだわりスカーフ持ち時）</h2><div class="speed-grid">${speeds(p.stats.spe).map(([l,v])=>`<div class="speed"><div class="label">${l}</div><div class="value">${v}（${Math.floor(v*1.5)}）</div></div>`).join("")}</div></section>
+    <section class="section"><h2>特性</h2><p class="help">特性名をタップすると、対戦向けの効果と必要な補足を表示します。</p><div class="abilities">${p.abilities.map(a=>`
+      <div class="ability-item"><button class="ability-button" type="button" aria-expanded="false"><span class="ability-name">${a}</span><span class="ability-toggle">説明を見る</span></button><div class="ability-detail">${renderAbilityInfo(a)}</div></div>`).join("")}</div></section>
+  </div>
+  <div class="detail-tab-panel ${activeDetailTab==="moves"?"active":""}" data-panel="moves">
+    <section class="section"><div class="moves-head"><div><h2 style="margin:0">使用可能な技</h2><div class="help">全 ${p.moves.length} 技／表示 ${shown.length} 技</div></div><input id="moveSearch" class="move-search" type="search" value="${moveQuery}" placeholder="技名を検索"></div>
+    <div class="move-groups">${moveListHtml(sortedMoves)}${shown.length?"":'<div class="empty">該当する技がありません。</div>'}</div></section>
+  </div>
+  <div class="detail-tab-panel ${activeDetailTab==="builds"?"active":""}" data-panel="builds">
+    <section class="build-guide"><h2>育成論</h2><p>このポケモンの想定型を掲載するためのタブです。今後、役割・性格・持ち物・技構成・能力調整・立ち回りなどを追加できます。</p>
+      <div class="build-placeholder-grid"><div class="build-placeholder"><strong>基本型</strong><span class="help">性格、持ち物、技構成、能力調整</span></div><div class="build-placeholder"><strong>役割・立ち回り</strong><span class="help">選出基準、得意な相手、苦手な相手</span></div></div>
+    </section>
+  </div>
+  <div class="footer">収録フォーム数：${POKEMON.length}／使用可能技：${p.moves.length}。上部タブで基本情報・覚える技・育成論を切り替えられます。</div>`;
+  detailEl.querySelectorAll(".detail-tab").forEach(tab=>tab.addEventListener("click",()=>{activeDetailTab=tab.dataset.tab;renderDetail()}));
   const ms=document.getElementById("moveSearch");
-  ms.addEventListener("input",e=>{moveQuery=e.target.value;renderDetail();const a=document.getElementById("moveSearch");a.focus();a.setSelectionRange(a.value.length,a.value.length)});
-  detailEl.querySelectorAll(".move-button").forEach(b=>b.addEventListener("click",()=>{const i=b.closest(".move-item");const open=i.classList.toggle("open");b.setAttribute("aria-expanded",String(open))}))
+  if(ms)ms.addEventListener("input",e=>{moveQuery=e.target.value;renderDetail();const a=document.getElementById("moveSearch");if(a){a.focus();a.setSelectionRange(a.value.length,a.value.length)}});
   detailEl.querySelectorAll(".ability-button").forEach(b=>b.addEventListener("click",()=>{
     const item=b.closest(".ability-item");
     const open=item.classList.toggle("open");
