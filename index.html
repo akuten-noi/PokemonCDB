@@ -244,6 +244,14 @@ input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:
 .damage-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .damage-card{border:1px solid var(--line);border-radius:9px;background:#fbfcfe;padding:9px}
 .damage-card h2{margin:0 0 7px;font-size:.88rem}
+.damage-side-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.9fr);gap:8px;align-items:start;margin-bottom:7px}
+.damage-side-head .damage-field{margin-top:0}
+.damage-base-stats{border:1px solid var(--line);border-radius:8px;background:#fff;padding:6px}
+.damage-base-stats-title{font-size:.66rem;font-weight:900;color:var(--muted);margin-bottom:4px}
+.damage-base-stats-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:3px}
+.damage-base-stat{border:1px solid #e1e7f0;border-radius:6px;background:#f8fafc;padding:4px 2px;text-align:center;min-width:0}
+.damage-base-stat .label{font-size:.56rem;white-space:nowrap;color:var(--muted)}
+.damage-base-stat strong{display:block;font-size:.72rem;margin-top:1px}
 .damage-field{display:grid;grid-template-columns:100px minmax(0,1fr);align-items:center;gap:7px;margin-top:6px}
 .damage-field>label{font-size:.72rem;font-weight:800;color:var(--muted)}
 .damage-field input,.damage-field select{padding:7px 8px;border-radius:8px;font-size:.76rem}
@@ -272,14 +280,19 @@ input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:
 .damage-bar{height:12px;border-radius:999px;background:#e5eaf2;overflow:hidden;margin-top:8px}
 .damage-bar>span{display:block;height:100%;background:#2f67d8;width:0}
 .damage-note{margin-top:6px;color:var(--muted);font-size:.68rem;line-height:1.45}
-@media(max-width:800px){.damage-columns{grid-template-columns:1fr}.damage-options{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:520px){.detail-tabs{gap:2px}.detail-tab{font-size:.68rem;padding:6px 1px}.damage-field{grid-template-columns:82px minmax(0,1fr)}.point-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.damage-result-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:800px){.damage-columns{grid-template-columns:1fr}.damage-options{grid-template-columns:repeat(2,minmax(0,1fr))}.damage-side-head{grid-template-columns:minmax(0,1fr) minmax(230px,.95fr)}}
+@media(max-width:520px){.detail-tabs{gap:2px}.detail-tab{font-size:.68rem;padding:6px 1px}.damage-field{grid-template-columns:82px minmax(0,1fr)}.point-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.damage-result-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.damage-side-head{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:5px}.damage-base-stats-grid{grid-template-columns:repeat(6,minmax(0,1fr))}.damage-base-stat{padding:3px 1px}.damage-base-stat .label{font-size:.52rem}.damage-base-stat strong{font-size:.67rem}}
+
+.controls{flex-wrap:wrap}
+.damage-page-toggle{font-weight:900}
+.damage-page-toggle.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+@media(max-width:620px){.controls input{flex:1 1 100%}.controls .list-toggle{flex:1 1 calc(50% - 4px)}}
 </style>
 </head>
 <body>
 <main class="app">
 <header><h1>ポケモンチャンピオンズ 対戦データベース</h1></header>
-<div class="controls"><input id="search" type="search" placeholder="ポケモン名を入力"><button id="listToggle" class="list-toggle" type="button" aria-expanded="false" aria-controls="list">ポケモン一覧を表示</button></div>
+<div class="controls"><input id="search" type="search" placeholder="ポケモン名を入力"><button id="listToggle" class="list-toggle" type="button" aria-expanded="false" aria-controls="list">ポケモン一覧を表示</button><button id="damagePageToggle" class="list-toggle damage-page-toggle" type="button">ダメージ計算</button></div>
 <div id="layout" class="layout"><aside id="list" class="sidebar" hidden></aside><section id="detail" class="detail"></section></div>
 </main>
 <script>
@@ -394,10 +407,10 @@ POKEMON.sort((a,b)=>{
   if(aMega!==bMega)return aMega?1:-1;
   return nameCollator.compare(a.name,b.name);
 });
-let selected=POKEMON[0]?.name||"",query="",moveQuery="",listOpen=false;
+let selected=POKEMON[0]?.name||"",query="",moveQuery="",listOpen=false,viewMode="database";
 let activeDetailTab="overview";
-let damageState={defender:POKEMON[1]?.name||POKEMON[0]?.name||"",move:"",atkPoints:0,defHpPoints:0,defPoints:0,atkBoost:0,defBoost:0,atkCorrection:"none",defCorrection:"none",attackerAbility:"",defenderAbility:"",attackerItem:"none",defenderItem:"none",weather:"none",terrain:"none",gravity:false,critical:false,helpingHand:false,spread:false,reflect:false};
-const layoutEl=document.getElementById("layout"),listEl=document.getElementById("list"),detailEl=document.getElementById("detail"),searchEl=document.getElementById("search"),listToggleEl=document.getElementById("listToggle");
+let damageState={attacker:POKEMON[0]?.name||"",defender:POKEMON[1]?.name||POKEMON[0]?.name||"",move:"",atkPoints:0,defHpPoints:0,defPoints:0,atkBoost:0,defBoost:0,atkCorrection:"none",defCorrection:"none",attackerAbility:"",defenderAbility:"",attackerItem:"none",defenderItem:"none",weather:"none",terrain:"none",gravity:false,critical:false,helpingHand:false,spread:false,reflect:false};
+const layoutEl=document.getElementById("layout"),listEl=document.getElementById("list"),detailEl=document.getElementById("detail"),searchEl=document.getElementById("search"),listToggleEl=document.getElementById("listToggle"),damagePageToggleEl=document.getElementById("damagePageToggle");
 function hiraToKata(v){return String(v||"").replace(/[ぁ-ゖ]/g,ch=>String.fromCharCode(ch.charCodeAt(0)+0x60))}
 function norm(v){return hiraToKata(String(v||"").normalize("NFKC").toLowerCase()).replace(/[\s・ー_\-（）()]/g,"")}
 function searchable(p){return p.name}
@@ -1143,7 +1156,12 @@ function abilityImmunity(ability,moveType){
   const t=typeKey(moveType);
   return (ability==="もらいび"&&t==="Fire")||(ability==="ちょすい"&&t==="Water")||(ability==="よびみず"&&t==="Water")||(ability==="ひらいしん"&&t==="Electric")||(ability==="そうしょく"&&t==="Grass");
 }
-function damageCalcHtml(attacker){
+function damageBaseStatsHtml(p){
+  return `<div class="damage-base-stats"><div class="damage-base-stats-title">基礎能力値</div><div class="damage-base-stats-grid">${Object.entries(p.stats).map(([k,v])=>`<div class="damage-base-stat"><span class="label">${statLabels[k]}</span><strong>${p.name==="ヌケニン"&&k==="hp"?1:v+(k==="hp"?75:20)}</strong></div>`).join("")}</div></div>`;
+}
+function damageCalcHtml(pagePokemon){
+  if(!POKEMON.some(p=>p.name===damageState.attacker))damageState.attacker=pagePokemon.name;
+  const attacker=POKEMON.find(p=>p.name===damageState.attacker)||pagePokemon;
   if(!damageState.move||!attacker.moves.includes(damageState.move))damageState.move=attacker.moves.find(n=>{const m=moveMeta(n);return m.power&&m.category!=="変化"})||attacker.moves[0]||"";
   if(!POKEMON.some(p=>p.name===damageState.defender))damageState.defender=POKEMON[0]?.name||"";
   const defender=POKEMON.find(p=>p.name===damageState.defender)||POKEMON[0];
@@ -1197,7 +1215,10 @@ function damageCalcHtml(attacker){
   return `<section class="damage-calculator">
     <div class="damage-columns">
       <div class="damage-card"><h2>攻撃側</h2>
-        <div class="damage-field"><label>ポケモン</label><select disabled><option>${attacker.name}</option></select></div>
+        <div class="damage-side-head">
+          <div class="damage-field"><label>ポケモン</label><select data-damage="attacker">${POKEMON.map(x=>`<option value="${x.name}" ${x.name===attacker.name?"selected":""}>${x.name}</option>`).join("")}</select></div>
+          ${damageBaseStatsHtml(attacker)}
+        </div>
         <div class="damage-field"><label>使用する技</label><select data-damage="move">${sortMovesByType(attacker.moves).map(({name,info})=>`<option value="${name}" ${name===damageState.move?"selected":""}>${name}（${info.type}・${info.category}）</option>`).join("")}</select></div>
         <div class="damage-field"><label>特性</label><select data-damage="attackerAbility">${abilityOptions(attacker,damageState.attackerAbility)}</select></div>
         <div class="damage-field"><label>持ち物</label><select data-damage="attackerItem">${itemOptions(damageState.attackerItem,"atk")}</select></div>
@@ -1207,7 +1228,10 @@ function damageCalcHtml(attacker){
         <div class="point-total">使用中の能力ポイント：${damageState.atkPoints} / 66（この計算で使う能力のみ）</div><div class="point-total">${physical?"攻撃":"特攻"}：${atkValue}</div>
       </div>
       <div class="damage-card"><h2>防御側</h2>
-        <div class="damage-field"><label>ポケモン</label><select data-damage="defender">${POKEMON.map(x=>`<option value="${x.name}" ${x.name===defender.name?"selected":""}>${x.name}</option>`).join("")}</select></div>
+        <div class="damage-side-head">
+          <div class="damage-field"><label>ポケモン</label><select data-damage="defender">${POKEMON.map(x=>`<option value="${x.name}" ${x.name===defender.name?"selected":""}>${x.name}</option>`).join("")}</select></div>
+          ${damageBaseStatsHtml(defender)}
+        </div>
         <div class="damage-field"><label>特性</label><select data-damage="defenderAbility">${abilityOptions(defender,damageState.defenderAbility)}</select></div>
         <div class="damage-field"><label>持ち物</label><select data-damage="defenderItem">${itemOptions(damageState.defenderItem,"def")}</select></div>
         <div class="point-grid">
@@ -1259,7 +1283,13 @@ function bindDamageControls(){
 }
 
 function renderDetail(){
-  const p=POKEMON.find(x=>x.name===selected);if(!p)return;
+  const p=POKEMON.find(x=>x.name===selected)||POKEMON[0];if(!p)return;
+  if(viewMode==="damage"){
+    detailEl.innerHTML=`<div class="head"><div><h2 class="name">ダメージ計算</h2><div class="help">攻撃側・防御側のポケモンを自由に選択できます。</div></div><button id="damageBackButton" class="list-toggle" type="button">ポケモン検索へ戻る</button></div>${damageCalcHtml(p)}<div class="footer">ポケモン検索とは独立したダメージ計算専用ページです。攻撃側・防御側の基礎能力値を選択欄の横で確認できます。</div>`;
+    document.getElementById("damageBackButton")?.addEventListener("click",()=>{viewMode="database";render()});
+    bindDamageControls();
+    return;
+  }
   const shown=p.moves;
   const sortedMoves=sortMovesByType(shown);
   detailEl.innerHTML=`<div class="head"><div><h2 class="name">${p.name}</h2><div class="chips">${p.types.map(t=>typeBadge(t,"chip")).join("")}</div></div><span class="dex">No.${p.dex}</span></div>
@@ -1267,7 +1297,6 @@ function renderDetail(){
     <button class="detail-tab ${activeDetailTab==="overview"?"active":""}" type="button" role="tab" aria-selected="${activeDetailTab==="overview"}" data-tab="overview">基本情報</button>
     <button class="detail-tab ${activeDetailTab==="moves"?"active":""}" type="button" role="tab" aria-selected="${activeDetailTab==="moves"}" data-tab="moves">覚える技</button>
     <button class="detail-tab ${activeDetailTab==="builds"?"active":""}" type="button" role="tab" aria-selected="${activeDetailTab==="builds"}" data-tab="builds">育成論</button>
-    <button class="detail-tab ${activeDetailTab==="damage"?"active":""}" type="button" role="tab" aria-selected="${activeDetailTab==="damage"}" data-tab="damage">ダメージ計算</button>
   </div>
   <div class="detail-tab-panel ${activeDetailTab==="overview"?"active":""}" data-panel="overview">
     <div class="overview-dashboard">
@@ -1291,16 +1320,21 @@ function renderDetail(){
       <div class="build-placeholder-grid"><div class="build-placeholder"><strong>基本型</strong><span class="help">能力補正、持ち物、技構成、能力ポイント調整</span></div><div class="build-placeholder"><strong>役割・立ち回り</strong><span class="help">選出基準、得意な相手、苦手な相手</span></div></div>
     </section>
   </div>
-  <div class="detail-tab-panel ${activeDetailTab==="damage"?"active":""}" data-panel="damage">
-    ${damageCalcHtml(p)}
-  </div>
-  <div class="footer">収録フォーム数：${POKEMON.length}／使用可能技：${p.moves.length}。上部タブで基本情報・覚える技・育成論・ダメージ計算を切り替えられます。</div>`;
+  <div class="footer">収録フォーム数：${POKEMON.length}／使用可能技：${p.moves.length}。上部タブで基本情報・覚える技・育成論を切り替えられます。</div>`;
   detailEl.querySelectorAll(".detail-tab").forEach(tab=>tab.addEventListener("click",()=>{activeDetailTab=tab.dataset.tab;renderDetail()}));
-  bindDamageControls();
 }
 function setListOpen(open){listOpen=Boolean(open);listEl.hidden=!listOpen;layoutEl.classList.toggle("list-open",listOpen);listToggleEl.setAttribute("aria-expanded",String(listOpen));listToggleEl.textContent=listOpen?"ポケモン一覧を閉じる":"ポケモン一覧を表示"}
-function render(){renderList();renderDetail()}
+function updateViewControls(){
+  const damageMode=viewMode==="damage";
+  searchEl.hidden=damageMode;
+  listToggleEl.hidden=damageMode;
+  damagePageToggleEl.textContent=damageMode?"ポケモン検索へ戻る":"ダメージ計算";
+  damagePageToggleEl.classList.toggle("active",damageMode);
+  if(damageMode)setListOpen(false);
+}
+function render(){updateViewControls();if(viewMode==="database")renderList();renderDetail()}
 searchEl.addEventListener("input",e=>{query=e.target.value;render()});
 listToggleEl.addEventListener("click",()=>{setListOpen(!listOpen);if(listOpen){renderList();if(innerWidth<801)listEl.scrollIntoView({behavior:"smooth",block:"nearest"})}});
+damagePageToggleEl.addEventListener("click",()=>{viewMode=viewMode==="damage"?"database":"damage";render();detailEl.scrollIntoView({behavior:"smooth",block:"start"})});
 setListOpen(false);render();
 </script></body></html>
