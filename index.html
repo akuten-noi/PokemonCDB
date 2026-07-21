@@ -240,7 +240,7 @@ input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:
 
 /* ダメージ計算 */
 .damage-calculator{margin-top:8px;display:grid;gap:8px}
-.damage-calculator-head{display:flex;justify-content:flex-end;margin-bottom:-2px}.damage-reset-button{border:1px solid #d1a7a7;border-radius:8px;background:#fff7f7;color:#a12626;padding:7px 11px;font-size:.72rem;font-weight:900;cursor:pointer}.damage-reset-button:hover{background:#ffecec}.damage-reset-button:active{transform:translateY(1px)}
+.damage-calculator-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:-2px}.damage-head-actions{display:flex;align-items:center;gap:6px}.damage-swap-button{border:1px solid #9eb8e8;border-radius:8px;background:#eef4ff;color:#174da8;padding:7px 11px;font-size:.72rem;font-weight:900;cursor:pointer}.damage-swap-button:hover{background:#dfeaff}.damage-swap-button:active{transform:translateY(1px)}.damage-reset-button{border:1px solid #d1a7a7;border-radius:8px;background:#fff7f7;color:#a12626;padding:7px 11px;font-size:.72rem;font-weight:900;cursor:pointer}.damage-reset-button:hover{background:#ffecec}.damage-reset-button:active{transform:translateY(1px)}
 .damage-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .damage-card{border:1px solid var(--line);border-radius:9px;background:#fbfcfe;padding:9px}
 .damage-card h2{margin:0 0 7px;font-size:.88rem}
@@ -255,7 +255,7 @@ input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:
 .damage-field{display:grid;grid-template-columns:100px minmax(0,1fr);align-items:center;gap:7px;margin-top:6px}
 .damage-field>label{font-size:.72rem;font-weight:800;color:var(--muted)}
 .damage-field input,.damage-field select{padding:7px 8px;border-radius:8px;font-size:.76rem}
-.point-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin-top:8px}
+.ability-points-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;font-size:.72rem;font-weight:900;color:var(--muted)}.ability-points-heading small{font-size:.64rem;font-weight:800}.point-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin-top:4px}
 .attack-point-grid{grid-template-columns:minmax(0,1fr)}
 .point-item{border:1px solid var(--line);border-radius:7px;background:#fff;padding:5px}
 .point-item label{display:flex;justify-content:space-between;gap:4px;font-size:.68rem;color:var(--muted);margin-bottom:3px}
@@ -329,7 +329,7 @@ input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:
 .hp-gauge-text{position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:.72rem;font-weight:900;text-shadow:0 1px 2px #000;white-space:nowrap}
 .hazard-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:5px}
 .hazard-select{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:8px;background:#fff;padding:6px 8px;font-size:.7rem}.hazard-select select{padding:5px;min-width:0}
-@media(max-width:800px){.damage-columns{grid-template-columns:1fr}.damage-options{grid-template-columns:repeat(2,minmax(0,1fr))}.damage-result{bottom:4px}.hazard-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:800px){.damage-calculator-head{align-items:stretch}.damage-head-actions{margin-left:auto}.damage-columns{grid-template-columns:1fr}.damage-options{grid-template-columns:repeat(2,minmax(0,1fr))}.damage-result{bottom:4px}.hazard-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:520px){.damage-rank-grid{grid-template-columns:repeat(5,minmax(0,1fr))}.pokemon-search-row{grid-template-columns:82px minmax(0,1fr)}.detail-tabs{gap:2px}.detail-tab{font-size:.68rem;padding:6px 1px}.damage-field{grid-template-columns:82px minmax(0,1fr)}.point-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.damage-result-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.damage-side-head{gap:7px}.damage-side-head .damage-field{width:100%}.damage-side-head select{width:100%;min-width:0}.damage-base-stats{width:100%}.damage-base-stats-grid{grid-template-columns:repeat(6,minmax(0,1fr))}.damage-base-stat{padding:3px 1px}.damage-base-stat .label{font-size:.52rem}.damage-base-stat strong{font-size:.67rem}.item-help{margin:-2px 0 7px 82px}.damage-result{padding:8px}.damage-result-main{font-size:.9rem}.damage-note{max-height:54px;overflow:auto}.hazard-grid{grid-template-columns:1fr}}
 
 
@@ -1735,7 +1735,7 @@ function damageCalcHtml(pagePokemon){
   const gaugeClass=remainWorstPct<=20?"hp-red":remainWorstPct<=50?"hp-yellow":"";
   const entryText=entryDamage?`場のダメージ：${entryDamage}（攻撃前HP ${hpBeforeAttack}/${hp}）`:`攻撃前HP：${hp}/${hp}`;
   return `<section class="damage-calculator">
-    <div class="damage-calculator-head"><button id="damageResetButton" class="damage-reset-button" type="button">リセット</button></div>
+    <div class="damage-calculator-head"><button id="damageSwapButton" class="damage-swap-button" type="button" title="攻撃側と防御側の設定を入れ替える">⇄ 攻防交代</button><div class="damage-head-actions"><button id="damageResetButton" class="damage-reset-button" type="button">リセット</button></div></div>
     <div class="damage-columns">
       <div class="damage-card"><h2>攻撃側</h2>
         <div class="damage-side-head">
@@ -1747,7 +1747,7 @@ function damageCalcHtml(pagePokemon){
         <div class="damage-field"><label>特性</label><select data-damage="attackerAbility">${abilityOptions(attacker,damageState.attackerAbility,"atk")}</select></div>
         ${conditionalAbilityControlHtml(damageState.attackerAbility)}
         <div class="damage-field"><label>持ち物</label><select data-damage="attackerItem">${itemOptions(damageState.attackerItem,"atk")}</select></div><div class="item-help">${itemHelp(damageState.attackerItem)}</div>
-        <div class="point-grid attack-point-grid"><div class="point-item"><label><span>${physical?"攻撃":"特攻"}</span><span>0～32</span></label><input data-damage="atkPoints" type="range" min="0" max="32" value="${damageState.atkPoints}"><div class="range-value">${damageState.atkPoints} / 32</div></div></div>
+        <div class="ability-points-heading"><span>能力ポイント</span><small>0～32</small></div><div class="point-grid attack-point-grid"><div class="point-item"><label><span>${physical?"攻撃":"特攻"}</span><span>0～32</span></label><input data-damage="atkPoints" type="range" min="0" max="32" value="${damageState.atkPoints}"><div class="range-value">${damageState.atkPoints} / 32</div></div></div>
         <div class="damage-field"><label>能力補正</label>${correctionChoiceHtml("atkCorrection",damageState.atkCorrection)}</div>
         <div class="damage-field"><label>能力ランク</label>${rankChoiceHtml("atkBoost",damageState.atkBoost)}</div>
         <div class="point-total">${physical?"攻撃":"特攻"}：${atkValue}</div>
@@ -1760,7 +1760,7 @@ function damageCalcHtml(pagePokemon){
         </div>
         <div class="damage-field"><label>特性</label><select data-damage="defenderAbility">${abilityOptions(defender,damageState.defenderAbility,"def")}</select></div>
         <div class="damage-field"><label>持ち物</label><select data-damage="defenderItem">${itemOptions(damageState.defenderItem,"def")}</select></div><div class="item-help">${itemHelp(damageState.defenderItem)}</div>
-        <div class="point-grid">
+        <div class="ability-points-heading"><span>能力ポイント</span><small>各能力 0～32</small></div><div class="point-grid">
           <div class="point-item"><label><span>HP</span><span>0～32</span></label><input data-damage="defHpPoints" type="range" min="0" max="32" value="${damageState.defHpPoints}"><div class="range-value">${damageState.defHpPoints} / 32</div></div>
           <div class="point-item"><label><span>${physical?"防御":"特防"}</span><span>0～32</span></label><input data-damage="defPoints" type="range" min="0" max="32" value="${damageState.defPoints}"><div class="range-value">${damageState.defPoints} / 32</div></div>
         </div>
@@ -1808,7 +1808,48 @@ function damageCalcHtml(pagePokemon){
     </div>
   </section>`;
 }
+function swapDamageSides(){
+  // 攻防交代で維持するのは、双方のポケモン（メガシンカ状態を含む）とバトル形式だけ。
+  const oldAttacker=damageState.attacker;
+  const oldDefender=damageState.defender;
+  const battleFormat=damageState.battleFormat;
+
+  Object.assign(damageState,{
+    attacker:oldDefender,
+    defender:oldAttacker,
+    move:"",
+    atkPoints:0,
+    defHpPoints:0,
+    defPoints:0,
+    atkBoost:0,
+    defBoost:0,
+    atkCorrection:"1.0",
+    defCorrection:"1.0",
+    attackerAbility:"",
+    defenderAbility:"",
+    attackerItem:"none",
+    defenderItem:"none",
+    weather:"none",
+    terrain:"none",
+    battleFormat,
+    opponentCount:"2",
+    gravity:false,
+    critical:false,
+    helpingHand:false,
+    reflect:false,
+    burn:false,
+    stealthRock:false,
+    spikes:0,
+    conditionalAbilityActive:false,
+    triggerAbilityActive:false
+  });
+}
+
 function bindDamageControls(){
+  document.getElementById("damageSwapButton")?.addEventListener("click",()=>{
+    swapDamageSides();
+    renderDetail();
+  });
   document.getElementById("damageResetButton")?.addEventListener("click",()=>{
     resetDamageConditions();
     renderDetail();
