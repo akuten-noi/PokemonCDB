@@ -241,6 +241,7 @@ input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:
 
 /* ダメージ計算 */
 .damage-calculator{margin-top:8px;display:grid;gap:8px}
+.damage-calculator-head{display:flex;justify-content:flex-end;margin-bottom:-2px}.damage-reset-button{border:1px solid #d1a7a7;border-radius:8px;background:#fff7f7;color:#a12626;padding:7px 11px;font-size:.72rem;font-weight:900;cursor:pointer}.damage-reset-button:hover{background:#ffecec}.damage-reset-button:active{transform:translateY(1px)}
 .damage-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .damage-card{border:1px solid var(--line);border-radius:9px;background:#fbfcfe;padding:9px}
 .damage-card h2{margin:0 0 7px;font-size:.88rem}
@@ -296,6 +297,14 @@ input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:
 .damage-move-option .type-badge{flex:0 0 auto;min-width:48px;padding:2px 7px;font-size:.66rem}
 .damage-move-option-name{font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .damage-move-option-meta{margin-left:auto;font-size:.68rem;color:var(--muted);white-space:nowrap}
+@media(max-width:600px){
+  .damage-move-picker-button{flex-wrap:wrap;align-items:center;padding:9px 30px 9px 10px;row-gap:5px}
+  .damage-move-picker-name{flex:1 1 100%;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.35}
+  .damage-move-picker-meta{margin-left:auto}
+  .damage-move-option{flex-wrap:wrap;align-items:center;row-gap:5px;padding:9px 8px}
+  .damage-move-option-name{flex:1 1 100%;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.35}
+  .damage-move-option-meta{margin-left:auto}
+}
 .pokemon-select-wrap{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:center;min-width:0}
 .pokemon-type-badges{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
 .pokemon-type-badges .type-badge{min-width:48px;padding:2px 7px;font-size:.66rem}
@@ -1237,6 +1246,10 @@ const DAMAGE_ABILITY_SHORT={
   "すなのちから":"すなのとき、いわ・じめん・はがね技の威力1.3倍（天候に連動して自動適用）",
   "フラワーギフト":"晴れのとき物理技に使う攻撃1.5倍（天候に連動して自動適用）",
   "ひひいろのこどう":"晴れのとき物理技に使う攻撃約1.33倍（天候に連動して自動適用）",
+  "フェアリースキン":"ノーマル技をフェアリー化・威力1.2倍",
+  "スカイスキン":"ノーマル技をひこう化・威力1.2倍",
+  "エレキスキン":"ノーマル技をでんき化・威力1.2倍",
+  "フリーズスキン":"ノーマル技をこおり化・威力1.2倍",
   "ドラゴンスキン":"ノーマル技をドラゴン化・威力1.2倍",
   "メガソーラー":"自分の技に晴れ補正を適用",
   "ほのおのたてがみ":"ほのお技の威力1.5倍",
@@ -1256,7 +1269,7 @@ const DAMAGE_ATTACKER_ABILITIES=new Set([
   "がんじょうあご","かたいツメ","てつのこぶし","メガランチャー","パンクロック",
   "テクニシャン","てきおうりょく","ちからもち","ヨガパワー","スナイパー","こんじょう",
   "もうか","げきりゅう","しんりょく","むしのしらせ","サンパワー","すなのちから",
-  "フラワーギフト","ひひいろのこどう","もらいび","ひらいしん","よびみず","そうしょく",
+  "フラワーギフト","ひひいろのこどう","フェアリースキン","スカイスキン","エレキスキン","フリーズスキン","ドラゴンスキン","もらいび","ひらいしん","よびみず","そうしょく",
   "ねつこうかん","かぜのり","ふうりょくでんき","でんきにかえる"
 ]);
 const DAMAGE_DEFENDER_ABILITIES=new Set([
@@ -1294,6 +1307,19 @@ function conditionalAbilityControlHtml(ability){
   }
   return "";
 }
+const NORMAL_TYPE_SKINS={
+  "フェアリースキン":"Fairy",
+  "スカイスキン":"Flying",
+  "エレキスキン":"Electric",
+  "フリーズスキン":"Ice",
+  "ドラゴンスキン":"Dragon"
+};
+function transformedMoveType(ability,moveType){
+  return typeKey(moveType)==="Normal"&&NORMAL_TYPE_SKINS[ability]?NORMAL_TYPE_SKINS[ability]:moveType;
+}
+function isNormalTypeSkinActive(ability,moveType){
+  return typeKey(moveType)==="Normal"&&Boolean(NORMAL_TYPE_SKINS[ability]);
+}
 function isGrounded(p,ability,gravity,item="none"){return gravity||item==="ironBall"||(!p.types.map(typeKey).includes("Flying")&&ability!=="ふゆう")}
 function typeMultiplierForDamage(moveType,defender,defAbility,gravity,defItem="none"){
   const atk=typeKey(moveType);
@@ -1315,6 +1341,7 @@ function offensiveAbilityMultiplier(ability,name,move,power){
   if(ability==="がんじょうあご"&&(BITE_FLAG_MOVES.has(name)||BITE_MOVES_EXACT.has(name)))m*=1.5;
   if(ability==="メガランチャー"&&(PULSE_FLAG_MOVES.has(name)||PULSE_MOVES_EXACT.has(name)))m*=1.5;
   if(ability==="パンクロック"&&SOUND_MOVES.has(name))m*=1.3;
+  if(isNormalTypeSkinActive(ability,move.type))m*=1.2;
   if(damageState.conditionalAbilityActive){
     const t=typeKey(move.type);
     if(ability==="もうか"&&t==="Fire")m*=1.5;
@@ -1424,6 +1451,40 @@ function twoHitKoChance(rolls,hp){
   return total?ko/total*100:0;
 }
 
+function resetDamageConditions(){
+  // 選択中の攻撃側・防御側ポケモンだけを維持し、それ以外を初期状態へ戻す。
+  const attacker=damageState.attacker;
+  const defender=damageState.defender;
+  Object.assign(damageState,{
+    attacker,
+    defender,
+    move:"",
+    atkPoints:0,
+    defHpPoints:0,
+    defPoints:0,
+    atkBoost:0,
+    defBoost:0,
+    atkCorrection:"1.0",
+    defCorrection:"1.0",
+    attackerAbility:"",
+    defenderAbility:"",
+    attackerItem:"none",
+    defenderItem:"none",
+    weather:"none",
+    terrain:"none",
+    battleFormat:"single",
+    opponentCount:"2",
+    gravity:false,
+    critical:false,
+    helpingHand:false,
+    reflect:false,
+    burn:false,
+    stealthRock:false,
+    spikes:0,
+    conditionalAbilityActive:false,
+    triggerAbilityActive:false
+  });
+}
 function damageCalcHtml(pagePokemon){
   if(!POKEMON.some(p=>p.name===damageState.attacker))damageState.attacker=pagePokemon.name;
   const attacker=POKEMON.find(p=>p.name===damageState.attacker)||pagePokemon;
@@ -1440,6 +1501,8 @@ function damageCalcHtml(pagePokemon){
   if(!atkAllowed.includes(damageState.attackerItem))damageState.attackerItem="none";
   if(!defAllowed.includes(damageState.defenderItem))damageState.defenderItem="none";
   const move=moveMeta(damageState.move);
+  const effectiveMoveType=transformedMoveType(damageState.attackerAbility,move.type);
+  const effectiveMove={...move,type:effectiveMoveType};
   const physical=move.category==="物理";
   let atkKey=physical?"atk":"spa",defKey=physical?"def":"spd";
   if(["サイコショック","サイコブレイク","しんぴのつるぎ"].includes(damageState.move))defKey="def";
@@ -1472,12 +1535,12 @@ function damageCalcHtml(pagePokemon){
 
   const attackerGrounded=isGrounded(attacker,damageState.attackerAbility,damageState.gravity,damageState.attackerItem);
   const defenderGrounded=isGrounded(defender,damageState.defenderAbility,damageState.gravity,damageState.defenderItem);
-  const effectiveness=typeMultiplierForDamage(move.type,defender,damageState.defenderAbility,damageState.gravity,damageState.defenderItem);
-  let stab=attacker.types.map(typeKey).includes(typeKey(move.type))?1.5:1;
+  const effectiveness=typeMultiplierForDamage(effectiveMoveType,defender,damageState.defenderAbility,damageState.gravity,damageState.defenderItem);
+  let stab=attacker.types.map(typeKey).includes(typeKey(effectiveMoveType))?1.5:1;
   if(damageState.attackerAbility==="てきおうりょく"&&stab>1)stab=2;
   // タイプ相性0倍・特性無効・サイコフィールドによる無効を、すべて同じ無効判定として扱う。
   // 相性0倍をここへ含めないと、最終処理の「最低1ダメージ」で1ダメージに戻ってしまう。
-  const immune=effectiveness===0||abilityImmunity(damageState.defenderAbility,move.type)||(damageState.terrain==="psychic"&&defenderGrounded&&Number(move.priority||0)>0);
+  const immune=effectiveness===0||abilityImmunity(damageState.defenderAbility,effectiveMoveType)||(damageState.terrain==="psychic"&&defenderGrounded&&Number(move.priority||0)>0);
 
   let entryDamage=0;
   if(damageState.stealthRock){
@@ -1502,10 +1565,10 @@ function damageCalcHtml(pagePokemon){
     const moveTarget=moveExtended(damageState.move,move).target;
     const autoSpread=damageState.battleFormat==="double"&&String(damageState.opponentCount)==="2"&&["相手全体","自分以外全体","全体"].includes(moveTarget);
     if(autoSpread)base=applyDamageMod(base,0.75);
-    if(damageState.weather==="sun"&&typeKey(move.type)==="Fire")base=applyDamageMod(base,1.5);
-    if(damageState.weather==="sun"&&typeKey(move.type)==="Water")base=applyDamageMod(base,0.5);
-    if(damageState.weather==="rain"&&typeKey(move.type)==="Water")base=applyDamageMod(base,1.5);
-    if(damageState.weather==="rain"&&typeKey(move.type)==="Fire")base=applyDamageMod(base,0.5);
+    if(damageState.weather==="sun"&&typeKey(effectiveMoveType)==="Fire")base=applyDamageMod(base,1.5);
+    if(damageState.weather==="sun"&&typeKey(effectiveMoveType)==="Water")base=applyDamageMod(base,0.5);
+    if(damageState.weather==="rain"&&typeKey(effectiveMoveType)==="Water")base=applyDamageMod(base,1.5);
+    if(damageState.weather==="rain"&&typeKey(effectiveMoveType)==="Fire")base=applyDamageMod(base,0.5);
     if(damageState.critical)base=applyDamageMod(base,damageState.attackerAbility==="スナイパー"?2.25:1.5);
 
     rolls=Array.from({length:16},(_,i)=>{
@@ -1514,15 +1577,15 @@ function damageCalcHtml(pagePokemon){
       d=applyDamageMod(d,effectiveness);
       const guts=damageState.attackerAbility==="こんじょう";
       if(damageState.burn&&physical&&!guts&&damageState.move!=="からげんき")d=applyDamageMod(d,0.5);
-      if(attackerGrounded&&damageState.terrain==="electric"&&typeKey(move.type)==="Electric")d=applyDamageMod(d,1.3);
-      if(attackerGrounded&&damageState.terrain==="psychic"&&typeKey(move.type)==="Psychic")d=applyDamageMod(d,1.3);
-      if(attackerGrounded&&damageState.terrain==="grassy"&&typeKey(move.type)==="Grass")d=applyDamageMod(d,1.3);
-      if(defenderGrounded&&damageState.terrain==="misty"&&typeKey(move.type)==="Dragon")d=applyDamageMod(d,0.5);
+      if(attackerGrounded&&damageState.terrain==="electric"&&typeKey(effectiveMoveType)==="Electric")d=applyDamageMod(d,1.3);
+      if(attackerGrounded&&damageState.terrain==="psychic"&&typeKey(effectiveMoveType)==="Psychic")d=applyDamageMod(d,1.3);
+      if(attackerGrounded&&damageState.terrain==="grassy"&&typeKey(effectiveMoveType)==="Grass")d=applyDamageMod(d,1.3);
+      if(defenderGrounded&&damageState.terrain==="misty"&&typeKey(effectiveMoveType)==="Dragon")d=applyDamageMod(d,0.5);
       if(defenderGrounded&&damageState.terrain==="grassy"&&["じしん","じならし","マグニチュード"].includes(damageState.move))d=applyDamageMod(d,0.5);
       if(damageState.helpingHand)d=applyDamageMod(d,1.5);
       if(damageState.reflect&&!damageState.critical)d=applyDamageMod(d,damageState.battleFormat==="double"?2/3:0.5);
       d=applyDamageMod(d,offensiveAbilityMultiplier(damageState.attackerAbility,damageState.move,move,power));
-      d=applyDamageMod(d,defensiveAbilityMultiplier(damageState.defenderAbility,move.type,effectiveness));
+      d=applyDamageMod(d,defensiveAbilityMultiplier(damageState.defenderAbility,effectiveMoveType,effectiveness));
       if(damageState.attackerItem==="lifeOrb")d=applyDamageMod(d,1.3);
       if(damageState.attackerItem==="muscleBand"&&physical)d=applyDamageMod(d,1.1);
       if(damageState.attackerItem==="wiseGlasses"&&!physical)d=applyDamageMod(d,1.1);
@@ -1541,11 +1604,14 @@ function damageCalcHtml(pagePokemon){
   const twoHitChance=twoHitKoChance(rolls,hpBeforeAttack);
   const ko=max===0?"ダメージなし":min>=hpBeforeAttack?"確定1発":max>=hpBeforeAttack?`乱数1発（${oneHitChance.toFixed(1)}%）`:twoHitChance>=100?"確定2発":twoHitChance>0?`乱数2発（${twoHitChance.toFixed(1)}%）`:"確定3発以上";
   const typeText=effectiveness===0?"無効":effectiveness===.25?"0.25倍":effectiveness===.5?"0.5倍":effectiveness===2?"2倍":effectiveness===4?"4倍":"等倍";
+  const skinActive=isNormalTypeSkinActive(damageState.attackerAbility,move.type);
+  const skinText=skinActive?`${damageState.attackerAbility}：ノーマル技を${TYPE_JA[typeKey(effectiveMoveType)]||effectiveMoveType}タイプに変更し、威力1.2倍。<br>`:"";
   const weatherAbilityText=(damageState.attackerAbility==="サンパワー"&&damageState.weather==="sun")?"／サンパワー：特攻1.5倍":(damageState.attackerAbility==="すなのちから"&&damageState.weather==="sand")?"／すなのちから：いわ・じめん・はがね技1.3倍":(damageState.attackerAbility==="フラワーギフト"&&damageState.weather==="sun")?"／フラワーギフト：攻撃1.5倍":(damageState.attackerAbility==="ひひいろのこどう"&&damageState.weather==="sun")?"／ひひいろのこどう：攻撃約1.33倍":"";
   const weatherHelp={none:"天候補正なし",sun:"ほのお技1.5倍／みず技0.5倍",rain:"みず技1.5倍／ほのお技0.5倍",sand:"いわタイプの特防1.5倍",snow:"こおりタイプの防御1.5倍"}[damageState.weather]+weatherAbilityText;
   const gaugeClass=remainWorstPct<=20?"hp-red":remainWorstPct<=50?"hp-yellow":"";
   const entryText=entryDamage?`場のダメージ：${entryDamage}（攻撃前HP ${hpBeforeAttack}/${hp}）`:`攻撃前HP：${hp}/${hp}`;
   return `<section class="damage-calculator">
+    <div class="damage-calculator-head"><button id="damageResetButton" class="damage-reset-button" type="button">リセット</button></div>
     <div class="damage-columns">
       <div class="damage-card"><h2>攻撃側</h2>
         <div class="damage-side-head">
@@ -1553,7 +1619,7 @@ function damageCalcHtml(pagePokemon){
           <div class="damage-field"><label>ポケモン</label><div class="pokemon-select-wrap"><select data-damage="attacker">${damagePokemonOptions(attacker)}</select>${pokemonTypeBadges(attacker)}</div></div>
           ${megaSwitchHtml("attacker",attacker)}
         </div>
-        <div class="damage-field"><label>使用する技</label><div class="move-select-wrap">${damageMovePickerHtml(attacker,damageState.move)}<div class="ability-help">使用できる物理技・特殊技を五十音順で表示します。</div></div></div>
+        <div class="damage-field"><label>使用する技</label><div class="move-select-wrap">${damageMovePickerHtml(attacker,damageState.move)}</div></div>
         <div class="damage-field"><label>特性</label><select data-damage="attackerAbility">${abilityOptions(attacker,damageState.attackerAbility,"atk")}</select></div>
         ${conditionalAbilityControlHtml(damageState.attackerAbility)}
         <div class="damage-field"><label>持ち物</label><select data-damage="attackerItem">${itemOptions(damageState.attackerItem,"atk")}</select></div><div class="item-help">${itemHelp(damageState.attackerItem)}</div>
@@ -1614,11 +1680,15 @@ function damageCalcHtml(pagePokemon){
         <div class="damage-result-cell"><span class="label">攻撃前HP</span><strong>${hpBeforeAttack}/${hp}</strong></div>
       </div>
       <div class="hp-gauge"><div class="hp-gauge-fill ${gaugeClass}" style="width:${Math.max(0,Math.min(100,remainWorstPct))}%"></div><div class="hp-gauge-text">与ダメージ量 ${min}～${max} ／ 与ダメージ割合 ${minPct.toFixed(1)}～${maxPct.toFixed(1)}%</div></div>
-      <div class="damage-note">${entryText}<br>乱数：${rolls.join(", ")}<br>${damageState.critical?`急所補正：${damageState.attackerAbility==="スナイパー"?"2.25倍（スナイパー）":"1.5倍"}。攻撃側のマイナス能力ランク、防御側のプラス能力ランク、壁を無視。<br>`:""}${CONDITIONAL_LOW_HP_ABILITIES.has(damageState.attackerAbility)?`${damageState.attackerAbility}：${damageState.conditionalAbilityActive?"有効（HP1/3以下）":"無効"}。<br>`:""}${damageState.attackerAbility==="サンパワー"?`サンパワー：${damageState.weather==="sun"?"晴れのため特攻1.5倍を自動適用":"晴れではないため補正なし"}。<br>`:""}${damageState.attackerAbility==="すなのちから"?`すなのちから：${damageState.weather==="sand"?"すなのため対象タイプ技1.3倍を自動適用":"すなではないため補正なし"}。<br>`:""}${["フラワーギフト","ひひいろのこどう"].includes(damageState.attackerAbility)?`${damageState.attackerAbility}：${damageState.weather==="sun"?"晴れのため能力補正を自動適用":"晴れではないため補正なし"}。<br>`:""}${TRIGGERED_DAMAGE_ABILITIES.has(damageState.attackerAbility)?`${damageState.attackerAbility}：${damageState.triggerAbilityActive?"発動済みとして補正を適用":"未発動"}。<br>`:""}能力ポイントは各能力0～32。補正は実機系の順序で段階的に丸めます。ダブルの全体技補正は、相手が2体いて複数へ命中するときのみ0.75倍です。固定ダメージ技、特殊参照技、主要な威力変動技、16×16通りの2発撃破率を反映します。</div>
+      <div class="damage-note">${entryText}<br>乱数：${rolls.join(", ")}<br>${skinText}${damageState.critical?`急所補正：${damageState.attackerAbility==="スナイパー"?"2.25倍（スナイパー）":"1.5倍"}。攻撃側のマイナス能力ランク、防御側のプラス能力ランク、壁を無視。<br>`:""}${CONDITIONAL_LOW_HP_ABILITIES.has(damageState.attackerAbility)?`${damageState.attackerAbility}：${damageState.conditionalAbilityActive?"有効（HP1/3以下）":"無効"}。<br>`:""}${damageState.attackerAbility==="サンパワー"?`サンパワー：${damageState.weather==="sun"?"晴れのため特攻1.5倍を自動適用":"晴れではないため補正なし"}。<br>`:""}${damageState.attackerAbility==="すなのちから"?`すなのちから：${damageState.weather==="sand"?"すなのため対象タイプ技1.3倍を自動適用":"すなではないため補正なし"}。<br>`:""}${["フラワーギフト","ひひいろのこどう"].includes(damageState.attackerAbility)?`${damageState.attackerAbility}：${damageState.weather==="sun"?"晴れのため能力補正を自動適用":"晴れではないため補正なし"}。<br>`:""}${TRIGGERED_DAMAGE_ABILITIES.has(damageState.attackerAbility)?`${damageState.attackerAbility}：${damageState.triggerAbilityActive?"発動済みとして補正を適用":"未発動"}。<br>`:""}能力ポイントは各能力0～32。補正は実機系の順序で段階的に丸めます。ダブルの全体技補正は、相手が2体いて複数へ命中するときのみ0.75倍です。固定ダメージ技、特殊参照技、主要な威力変動技、16×16通りの2発撃破率を反映します。</div>
     </div>
   </section>`;
 }
 function bindDamageControls(){
+  document.getElementById("damageResetButton")?.addEventListener("click",()=>{
+    resetDamageConditions();
+    renderDetail();
+  });
   detailEl.querySelectorAll("[data-damage]").forEach(el=>el.addEventListener("change",()=>{
     const k=el.dataset.damage;
     if(el.type==="checkbox")damageState[k]=el.checked;
