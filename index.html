@@ -17,15 +17,15 @@ input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:
 .mon-btn:hover,.mon-btn.active{background:var(--soft)} .dex{color:var(--muted);font-size:.8rem;white-space:nowrap} .detail{padding:18px;min-width:0}
 .head{display:flex;justify-content:space-between;gap:12px} .name{margin:0;font-size:1.65rem} .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .chip{border:1px solid var(--line);border-radius:999px;padding:3px 9px;background:#fafbfc;font-size:.82rem} .section{margin-top:22px} .section h2{margin:0 0 10px;font-size:1rem}
-.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:7px} .stat.total{grid-column:1/-1} .stat,.speed,.ability{border:1px solid var(--line);border-radius:11px;padding:10px;background:#fbfcfe}
-.stat{text-align:center} .label{color:var(--muted);font-size:.76rem} .value{font-weight:750;font-size:1.15rem} .speed-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
-.speed{text-align:center} .speed:first-child{background:var(--soft);border-color:#b9cdf8} .help{color:var(--muted);font-size:.82rem;margin:0 0 8px}
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:7px} .stat.total{grid-column:1/-1} .stat,.ability{border:1px solid var(--line);border-radius:11px;padding:10px;background:#fbfcfe}
+.stat{text-align:center} .label{color:var(--muted);font-size:.76rem} .value{font-weight:750;font-size:1.15rem}
+.help{color:var(--muted);font-size:.82rem;margin:0 0 8px}
 .abilities{display:grid;grid-template-columns:repeat(3,1fr);gap:7px} .moves-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px}
 .move-search{max-width:280px;padding:9px 11px} .move-groups{display:grid;grid-template-columns:repeat(3,1fr);gap:10px} .move-group{border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .move-group h3{margin:0;padding:9px 11px;background:#f2f5fa;font-size:.9rem;border-bottom:1px solid var(--line)} .move-list{list-style:none;margin:0;padding:0}
 .move-list li{padding:8px 11px;border-bottom:1px solid #edf0f5;font-size:.9rem} .move-list li:last-child{border-bottom:0} .empty{color:var(--muted);padding:25px;text-align:center}
 .footer{color:var(--muted);font-size:.8rem;margin-top:22px;padding-top:12px;border-top:1px solid var(--line)}
-@media(max-width:800px){.controls{grid-template-columns:minmax(0,1fr) auto}.list-toggle{padding:0 11px;font-size:.84rem}.layout,.layout.list-open{grid-template-columns:1fr}.sidebar{max-height:220px;order:0}.detail{order:1}.stats{grid-template-columns:repeat(3,1fr)}.speed-grid{grid-template-columns:repeat(2,1fr)}.abilities{grid-template-columns:1fr}.move-groups{grid-template-columns:1fr}}
+@media(max-width:800px){.controls{grid-template-columns:minmax(0,1fr) auto}.list-toggle{padding:0 11px;font-size:.84rem}.layout,.layout.list-open{grid-template-columns:1fr}.sidebar{max-height:220px;order:0}.detail{order:1}.stats{grid-template-columns:repeat(3,1fr)}.abilities{grid-template-columns:1fr}.move-groups{grid-template-columns:1fr}}
 
 .move-groups{display:grid!important;grid-template-columns:1fr!important;gap:14px}
 .move-group{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
@@ -175,9 +175,8 @@ input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:
 .matchup-label{font-size:.72rem;padding-top:0}.matchup-note{margin-top:5px;font-size:.66rem;line-height:1.35}
 .type-badges{gap:4px}.type-badge{min-width:48px;padding:2px 7px;font-size:.68rem}
 .stats{grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
-.stat,.speed,.ability{border-radius:7px;padding:5px 4px}
-.stat .label,.speed .label{font-size:.66rem}.stat .value,.speed .value{font-size:.92rem;line-height:1.2}
-.speed-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
+.stat,.ability{border-radius:7px;padding:5px 4px}
+.stat .label{font-size:.66rem}.stat .value{font-size:.92rem;line-height:1.2}
 .abilities-section{grid-column:1/-1}
 .abilities{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
 .ability-item{border-radius:8px;padding:7px 8px;overflow:visible}
@@ -220,7 +219,7 @@ input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:
 }
 @media(max-width:520px){
   .detail{font-size:.84rem}.name{font-size:1.2rem}.detail-tab{font-size:.74rem;padding:6px 3px}
-  .stats{grid-template-columns:repeat(3,1fr)}.speed-grid{grid-template-columns:repeat(2,1fr)}
+  .stats{grid-template-columns:repeat(3,1fr)}
   .matchup-row{grid-template-columns:48px 1fr}.type-badge{min-width:44px}
   .move-summary{flex-wrap:wrap}.move-name{flex:1 0 100%}.move-search{max-width:150px}
 }
@@ -346,6 +345,21 @@ input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:
 .mega-switch-btn:hover{background:var(--soft)}
 .mega-switch-btn.active{border-color:var(--accent);background:var(--accent);color:#fff}
 @media(max-width:520px){.mega-switch-label{min-width:82px}}
+
+/* 基本情報：ステータス実数値4区分表 */
+.status-table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:9px;background:#fff}
+.status-table{width:100%;border-collapse:collapse;min-width:560px;font-size:.76rem}
+.status-table th,.status-table td{padding:7px 8px;border-bottom:1px solid #e7ebf2;border-right:1px solid #edf0f5;text-align:center;white-space:nowrap}
+.status-table th:last-child,.status-table td:last-child{border-right:0}
+.status-table tbody tr:last-child th,.status-table tbody tr:last-child td{border-bottom:0}
+.status-table thead th{background:#f2f5fa;font-weight:900;color:#3c4657}
+.status-table thead th:first-child{min-width:76px}
+.status-table tbody th{background:#f8fafc;text-align:left;font-weight:900}
+.status-table td{font-weight:850;font-size:.84rem}
+.status-table .status-neutral{background:#eef4ff;color:#174da8}
+.status-table-note{margin:6px 0 0;color:var(--muted);font-size:.66rem;line-height:1.5}
+.status-table-note strong{color:#4b5563}
+@media(max-width:600px){.status-table{min-width:500px}.status-table th,.status-table td{padding:6px 7px}.status-table-wrap{margin-right:-2px}}
 
 </style>
 </head>
@@ -485,8 +499,6 @@ function filtered(){
     return {p,index,rank};
   }).sort((a,b)=>a.rank-b.rank||a.index-b.index).map(x=>x.p);
 }
-function calcSpeed(base,ev,nature){const raw=Math.floor(((2*base+31+Math.floor(ev/4))*50)/100)+5;return Math.floor(raw*nature)}
-function speeds(base){return [["最速",calcSpeed(base,252,1.1)],["準速",calcSpeed(base,252,1)],["無振り",calcSpeed(base,0,1)],["最遅",calcSpeed(base,0,.9)]]}
 function renderList(){const mons=filtered();if(!mons.length){listEl.innerHTML='<div class="empty">該当するポケモンがいません</div>';detailEl.innerHTML='<div class="empty">検索条件を変更してください。</div>';return}if(!mons.some(p=>p.name===selected))selected=mons[0].name;listEl.innerHTML=mons.map(p=>`<button class="mon-btn ${p.name===selected?"active":""}" data-name="${p.name}"><span>${p.name}</span><span class="dex">No.${p.dex}</span></button>`).join("");listEl.querySelectorAll(".mon-btn").forEach(b=>b.addEventListener("click",()=>{selected=b.dataset.name;moveQuery="";if(innerWidth<801)setListOpen(false);render();if(innerWidth<801)detailEl.scrollIntoView({behavior:"smooth",block:"start"})}))}
 
 
@@ -1368,8 +1380,23 @@ function abilityImmunity(ability,moveType){
   const t=typeKey(moveType);
   return (ability==="もらいび"&&t==="Fire")||(ability==="ちょすい"&&t==="Water")||(ability==="よびみず"&&t==="Water")||(ability==="ひらいしん"&&t==="Electric")||(ability==="そうしょく"&&t==="Grass");
 }
+function calcDisplayedStatValues(p,key){
+  if(p.name==="ヌケニン"&&key==="hp") return {highest:1,invested:1,neutral:1,lowest:1};
+  const neutral=p.stats[key]+(key==="hp"?75:20);
+  const invested=neutral+32;
+  if(key==="hp") return {highest:invested,invested,neutral,lowest:neutral};
+  return {highest:Math.floor(invested*1.1),invested,neutral,lowest:Math.floor(neutral*0.9)};
+}
+function renderStatusTable(p){
+  const rows=Object.keys(p.stats).map(key=>{
+    const v=calcDisplayedStatValues(p,key);
+    return `<tr><th scope="row">${statLabels[key]}</th><td>${v.highest}</td><td>${v.invested}</td><td class="status-neutral">${v.neutral}</td><td>${v.lowest}</td></tr>`;
+  }).join("");
+  return `<div class="status-table-wrap"><table class="status-table"><thead><tr><th>能力</th><th>最高</th><th>32振</th><th>無振</th><th>最低</th></tr></thead><tbody>${rows}</tbody></table></div><p class="status-table-note"><strong>最高</strong>：能力ポイント32振り・能力補正1.1倍　／　<strong>32振</strong>：能力ポイント32振り　／　<strong>無振</strong>：能力ポイント・能力補正なし　／　<strong>最低</strong>：能力ポイント無振り・能力補正0.9倍<br>※ HPには能力補正がかからないため、「最高＝32振」「無振＝最低」となります。</p>`;
+}
+
 function damageBaseStatsHtml(p){
-  return `<div class="damage-base-stats"><div class="damage-base-stats-title">基礎能力値</div><div class="damage-base-stats-grid">${Object.entries(p.stats).map(([k,v])=>`<div class="damage-base-stat"><span class="label">${statLabels[k]}</span><strong>${p.name==="ヌケニン"&&k==="hp"?1:v+(k==="hp"?75:20)}</strong></div>`).join("")}</div></div>`;
+  return `<div class="damage-base-stats"><div class="damage-base-stats-title">ステータス（実数値）</div><div class="damage-base-stats-grid">${Object.entries(p.stats).map(([k,v])=>`<div class="damage-base-stat"><span class="label">${statLabels[k]}</span><strong>${p.name==="ヌケニン"&&k==="hp"?1:v+(k==="hp"?75:20)}</strong></div>`).join("")}</div></div>`;
 }
 
 function isMegaPokemon(p){return Boolean(p&&p.name.startsWith("メガ")&&p.name!=="メガニウム")}
@@ -1742,7 +1769,7 @@ function bindDamageControls(){
 function renderDetail(){
   const p=POKEMON.find(x=>x.name===selected)||POKEMON[0];if(!p)return;
   if(viewMode==="damage"){
-    detailEl.innerHTML=`<div class="head"><div><h2 class="name">ダメージ計算</h2><div class="help">攻撃側・防御側のポケモンを自由に選択できます。</div></div><button id="damageBackButton" class="list-toggle" type="button">ポケモン検索へ戻る</button></div>${damageCalcHtml(p)}<div class="footer">ポケモン検索とは独立したダメージ計算専用ページです。攻撃側・防御側の基礎能力値を選択欄の横で確認できます。</div>`;
+    detailEl.innerHTML=`<div class="head"><div><h2 class="name">ダメージ計算</h2><div class="help">攻撃側・防御側のポケモンを自由に選択できます。</div></div><button id="damageBackButton" class="list-toggle" type="button">ポケモン検索へ戻る</button></div>${damageCalcHtml(p)}<div class="footer">ポケモン検索とは独立したダメージ計算専用ページです。攻撃側・防御側のステータス（実数値）を選択欄の横で確認できます。</div>`;
     document.getElementById("damageBackButton")?.addEventListener("click",()=>{viewMode="database";render()});
     bindDamageControls();
     return;
@@ -1759,10 +1786,9 @@ function renderDetail(){
     <div class="overview-dashboard">
       <div class="overview-main">
         ${matchupHtml(p.types)}
-        <section class="section"><h2>基礎能力値</h2><div class="stats">${Object.entries(p.stats).map(([k,v])=>`<div class="stat"><div class="label">${statLabels[k]}</div><div class="value">${p.name==="ヌケニン"&&k==="hp"?1:v+(k==="hp"?75:20)}</div></div>`).join("")}</div></section>
+        <section class="section"><h2>ステータス（実数値）</h2>${renderStatusTable(p)}</section>
       </div>
       <div class="overview-side">
-        <section class="section"><h2>素早さ（こだわりスカーフ持ち時）</h2><div class="speed-grid">${speeds(p.stats.spe).map(([l,v])=>`<div class="speed"><div class="label">${l}</div><div class="value">${v}（${Math.floor(v*1.5)}）</div></div>`).join("")}</div></section>
         <section class="section abilities-section"><h2>特性</h2><div class="abilities">${p.abilities.map(a=>`
           <div class="ability-item"><div class="ability-button"><span class="ability-name">${a}</span></div><div class="ability-detail">${renderAbilityInfo(a)}</div></div>`).join("")}</div></section>
       </div>
