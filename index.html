@@ -503,6 +503,14 @@ input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:
 .search-suggestion-empty{padding:12px;text-align:center;font-size:.76rem;color:var(--muted)}
 @media(max-width:620px){.top-search-wrap{flex:1 1 100%;width:100%}}
 
+/* 通常ポケモン詳細：名前横のメガシンカ切り替え */
+.pokemon-title-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.detail-mega-buttons{display:inline-flex;align-items:center;gap:5px;flex-wrap:wrap}
+.detail-mega-btn{border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--text);padding:5px 9px;font-size:.68rem;font-weight:900;cursor:pointer;line-height:1.2}
+.detail-mega-btn:hover{background:var(--soft)}
+.detail-mega-btn.active{border-color:var(--accent);background:var(--accent);color:#fff}
+@media(max-width:520px){.pokemon-title-row{gap:6px}.detail-mega-btn{padding:5px 8px;font-size:.65rem}}
+
 </style>
 </head>
 <body>
@@ -614,20 +622,20 @@ function matchupHtml(types){
 }
 const statLabels={hp:"HP",atk:"攻撃",def:"防御",spa:"特攻",spd:"特防",spe:"素早さ"};
 const nameCollator=new Intl.Collator("ja",{usage:"sort",sensitivity:"base",numeric:true});
-function pokemonSortKey(name){return name.startsWith("メガ")?name.slice(2):name}
+function pokemonSortKey(name){return name.startsWith("メガ")&&name!=="メガニウム"?name.slice(2):name}
 POKEMON.sort((a,b)=>{
   const byBase=nameCollator.compare(pokemonSortKey(a.name),pokemonSortKey(b.name));
   if(byBase!==0)return byBase;
-  const aMega=a.name.startsWith("メガ"),bMega=b.name.startsWith("メガ");
+  const aMega=isMegaPokemon(a),bMega=isMegaPokemon(b);
   if(aMega!==bMega)return aMega?1:-1;
   return nameCollator.compare(a.name,b.name);
 });
 let selected=POKEMON[0]?.name||"",query="",moveQuery="",listOpen=false,viewMode="database";
 let listKana="all",pickerSide="",pickerQuery="",pickerKana="all",damageMoveKana="all",learnsetKana="all",learnsetType="all";
 const KANA_GROUPS={ア:"アイウエオ",カ:"カキクケコガギグゲゴ",サ:"サシスセソザジズゼゾ",タ:"タチツテトダヂヅデド",ナ:"ナニヌネノ",ハ:"ハヒフヘホバビブベボパピプペポ",マ:"マミムメモ",ヤ:"ヤユヨ",ラ:"ラリルレロ",ワ:"ワヲン"};
-function firstKana(name){const n=hiraToKata(String(name||"").replace(/^メガ/,""));return n.charAt(0)}
+function firstKana(name){const raw=String(name||"");const n=hiraToKata(raw.startsWith("メガ")&&raw!=="メガニウム"?raw.slice(2):raw);return n.charAt(0)}
 function matchesKana(p,kana){return kana==="all"||(KANA_GROUPS[kana]||"").includes(firstKana(p.name))}
-function filterPokemonList(q,kana){const nq=norm(q);return POKEMON.filter(p=>(!nq||norm(p.name).includes(nq))&&matchesKana(p,kana)).sort((a,b)=>{if(nq){const ar=norm(a.name).startsWith(nq)?0:1,br=norm(b.name).startsWith(nq)?0:1;if(ar!==br)return ar-br}return nameCollator.compare(pokemonSortKey(a.name),pokemonSortKey(b.name))})}
+function filterPokemonList(q,kana){const nq=norm(q);return POKEMON.filter(p=>!isMegaPokemon(p)&&(!nq||norm(p.name).includes(nq))&&matchesKana(p,kana)).sort((a,b)=>{if(nq){const ar=norm(a.name).startsWith(nq)?0:1,br=norm(b.name).startsWith(nq)?0:1;if(ar!==br)return ar-br}return nameCollator.compare(pokemonSortKey(a.name),pokemonSortKey(b.name))})}
 let activeDetailTab="overview";
 let damageState={attacker:POKEMON[0]?.name||"",defender:POKEMON[1]?.name||POKEMON[0]?.name||"",move:"",atkPoints:0,defHpPoints:0,defPoints:0,atkBoost:0,defBoost:0,atkCorrection:"1.0",defCorrection:"1.0",attackerAbility:"",defenderAbility:"",attackerItem:"none",defenderItem:"none",weather:"none",terrain:"none",battleFormat:"single",opponentCount:"2",gravity:false,critical:false,helpingHand:false,reflect:false,burn:false,stealthRock:false,spikes:0,conditionalAbilityActive:false,triggerAbilityActive:false};
 const layoutEl=document.getElementById("layout"),listEl=document.getElementById("list"),detailEl=document.getElementById("detail"),searchEl=document.getElementById("search"),searchSuggestionsEl=document.getElementById("searchSuggestions"),listToggleEl=document.getElementById("listToggle"),damagePageToggleEl=document.getElementById("damagePageToggle"),pokemonPickerModal=document.getElementById("pokemonPickerModal"),pokemonPickerFilters=document.getElementById("pokemonPickerFilters"),pokemonPickerList=document.getElementById("pokemonPickerList"),pokemonPickerClose=document.getElementById("pokemonPickerClose");
@@ -1619,6 +1627,19 @@ function megaSwitchHtml(side,pokemon){
   ];
   return `<div class="mega-switch-row"><span class="mega-switch-label">メガ切り替え</span><div class="mega-switch-buttons">${buttons.join("")}</div></div>`;
 }
+function detailMegaSwitchHtml(pokemon){
+  const base=basePokemonForDamage(pokemon);
+  const forms=megaFormsForDamage(pokemon);
+  if(!forms.length)return "";
+  const buttons=[
+    `<button class="detail-mega-btn ${!isMegaPokemon(pokemon)?"active":""}" type="button" data-detail-mega-value="${base.name}">通常</button>`,
+    ...forms.map(form=>{
+      const label=form.name.endsWith(" X")?"メガX":form.name.endsWith(" Y")?"メガY":"メガ";
+      return `<button class="detail-mega-btn ${pokemon.name===form.name?"active":""}" type="button" data-detail-mega-value="${form.name}">${label}</button>`;
+    })
+  ];
+  return `<span class="detail-mega-buttons" aria-label="メガシンカ切り替え">${buttons.join("")}</span>`;
+}
 function damageMovesFor(pokemon){
   return (pokemon.moves||[])
     .map(name=>({name,info:moveMeta(name)}))
@@ -2065,7 +2086,7 @@ function renderDetail(){
   }
   const shown=filterLearnsetMoves(p);
   const sortedMoves=sortMovesByType(shown);
-  detailEl.innerHTML=`<div class="head"><div><h2 class="name">${p.name}</h2><div class="chips">${p.types.map(t=>typeBadge(t,"chip")).join("")}</div></div><span class="dex">No.${p.dex}</span></div>
+  detailEl.innerHTML=`<div class="head"><div><div class="pokemon-title-row"><h2 class="name">${p.name}</h2>${detailMegaSwitchHtml(p)}</div><div class="chips">${p.types.map(t=>typeBadge(t,"chip")).join("")}</div></div><span class="dex">No.${p.dex}</span></div>
   <div class="detail-tabs" role="tablist" aria-label="ポケモン詳細の表示切り替え">
     <button class="detail-tab ${activeDetailTab==="overview"?"active":""}" type="button" role="tab" aria-selected="${activeDetailTab==="overview"}" data-tab="overview">基本情報</button>
     <button class="detail-tab ${activeDetailTab==="moves"?"active":""}" type="button" role="tab" aria-selected="${activeDetailTab==="moves"}" data-tab="moves">覚える技</button>
@@ -2091,6 +2112,13 @@ function renderDetail(){
   </div>
   <div class="footer">収録フォーム数：${POKEMON.length}／使用可能技：${p.moves.length}。上部タブで基本情報・覚える技・育成論を切り替えられます。</div>`;
   detailEl.querySelectorAll(".detail-tab").forEach(tab=>tab.addEventListener("click",()=>{activeDetailTab=tab.dataset.tab;renderDetail()}));
+  detailEl.querySelectorAll("[data-detail-mega-value]").forEach(button=>button.addEventListener("click",()=>{
+    const nextName=button.dataset.detailMegaValue;
+    if(!POKEMON.some(x=>x.name===nextName)||nextName===selected)return;
+    selected=nextName;
+    moveQuery="";learnsetKana="all";learnsetType="all";
+    renderDetail();
+  }));
   bindLearnsetFilters();
 }
 function setListOpen(open){listOpen=Boolean(open);listEl.hidden=!listOpen;layoutEl.classList.toggle("list-open",listOpen);listToggleEl.setAttribute("aria-expanded",String(listOpen));listToggleEl.textContent=listOpen?"ポケモン一覧を閉じる":"ポケモン一覧を表示"}
