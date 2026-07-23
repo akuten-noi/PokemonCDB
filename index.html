@@ -275,7 +275,7 @@ input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:
 .point-adjust-value{display:flex;align-items:center;justify-content:center;min-height:34px;border:1px solid #d8e0ec;border-radius:8px;background:#fff;font-size:.82rem;font-weight:900;color:#26344d;font-variant-numeric:tabular-nums}
 @media(max-width:520px){.point-adjust-row{grid-template-columns:40px minmax(0,1fr) 40px;gap:6px}.point-adjust-button{width:40px;height:40px;font-size:1.2rem}.point-adjust-value{min-height:40px;font-size:.9rem}}
 .point-total{margin-top:7px;padding:6px 8px;border-radius:7px;background:var(--soft);font-size:.72rem;font-weight:800}
-.point-total.over{background:#fff0f0;color:#b42318}
+.point-total.over{background:#fff0f0;color:#b42318}.point-total.at-limit{background:#e8f7ee;color:#18794e}
 .damage-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 .damage-check{display:flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:8px;background:#fff;padding:7px 8px;font-size:.72rem}
 .damage-check input{width:auto;margin:0}
@@ -532,12 +532,46 @@ input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:
 @media(max-width:800px){.speed-columns{grid-template-columns:1fr}.speed-common-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.speed-result{bottom:4px}}
 @media(max-width:520px){.speed-common-grid{grid-template-columns:1fr}.speed-result-matchup{grid-template-columns:1fr}.speed-result-vs{transform:rotate(90deg)}.speed-result-value{font-size:1.18rem}}
 
+
+/* 対戦用簡易計算 */
+.quick-page-toggle{font-weight:900}.quick-page-toggle.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.quick-calculator{display:grid;gap:9px;margin-top:8px}.quick-toolbar,.quick-panel{border:1px solid var(--line);border-radius:10px;background:#fbfcfe;padding:10px}
+.quick-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.quick-segment{display:flex;gap:5px;flex-wrap:wrap}
+.quick-btn{border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--text);padding:7px 10px;font-size:.72rem;font-weight:900;cursor:pointer}.quick-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.quick-party-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.quick-slot{border:1px solid var(--line);border-radius:9px;background:#fff;padding:8px;display:grid;gap:6px}
+.quick-slot-title{display:flex;align-items:center;justify-content:space-between;font-size:.76rem;font-weight:900}.quick-slot select,.quick-slot input{padding:6px 7px;font-size:.72rem;border-radius:7px}
+.quick-mini-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}.quick-mini-field label{display:block;font-size:.61rem;color:var(--muted);font-weight:800;margin-bottom:2px}.quick-nature-effect{margin-top:4px;min-height:1.35em;font-size:.68rem;font-weight:850;line-height:1.35}.quick-nature-up{color:#d12b2b}.quick-nature-down{color:#2468c9}.quick-nature-neutral{color:var(--muted)}
+.quick-moves{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.quick-actions{display:flex;justify-content:flex-end;gap:6px;flex-wrap:wrap}
+.quick-battle-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.quick-battle-card{border:1px solid var(--line);border-radius:9px;background:#fff;padding:9px;display:grid;gap:7px}
+.quick-rank-row{display:grid;grid-template-columns:42px minmax(0,1fr) 42px;gap:5px;align-items:center}.quick-rank-value{display:grid;place-items:center;min-height:38px;border:1px solid var(--line);border-radius:8px;background:#fff;font-weight:950}
+.quick-result-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px;background:#fff}.quick-result-table{width:100%;border-collapse:collapse;min-width:620px;font-size:.72rem}
+.quick-result-table th,.quick-result-table td{padding:7px 8px;border-bottom:1px solid #e7ebf2;border-right:1px solid #edf0f5;text-align:center;white-space:nowrap}.quick-result-table th{background:#f2f5fa;font-weight:900}.quick-result-table td:last-child,.quick-result-table th:last-child{border-right:0}
+.quick-ko{font-weight:950}.quick-speed-box{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.quick-speed-cell{border:1px solid var(--line);border-radius:8px;background:#fff;padding:7px;text-align:center}.quick-speed-cell strong{display:block;font-size:1rem}
+.quick-note{font-size:.67rem;color:var(--muted);line-height:1.5}.quick-subtitle{font-size:.8rem;font-weight:950;margin:0 0 6px}.quick-kana-filter{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0;padding:7px;border:1px solid var(--line);border-radius:9px;background:#f8fafc}.quick-kana-filter .filter-chip{min-height:28px}
+@media(max-width:800px){.quick-party-grid,.quick-battle-grid{grid-template-columns:1fr}.quick-speed-box{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.quick-mini-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.quick-moves{grid-template-columns:1fr}.quick-page-toggle{flex:1 1 calc(50% - 4px)}}
+
+/* 対戦用簡易計算：専用プルダウン */
+.quick-custom-picker{position:relative;min-width:0}
+.quick-picker-button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--text);padding:7px 9px;font-size:.72rem;text-align:left;cursor:pointer}
+.quick-picker-button::after{content:"▼";font-size:.62rem;color:var(--muted);flex:0 0 auto}
+.quick-picker-menu{position:absolute;z-index:120;left:0;right:0;top:calc(100% + 4px);max-height:330px;overflow:auto;border:1px solid var(--line);border-radius:9px;background:#fff;box-shadow:0 10px 28px rgba(20,40,80,.2);padding:5px}
+.quick-picker-menu[hidden]{display:none}
+.quick-picker-kana{position:sticky;top:-5px;z-index:2;display:flex;flex-wrap:wrap;gap:4px;margin:-5px -5px 5px;padding:7px 6px;background:rgba(255,255,255,.98);border-bottom:1px solid var(--line)}
+.quick-picker-option{width:100%;display:flex;align-items:center;gap:6px;border:0;border-radius:7px;background:#fff;color:var(--text);padding:8px 9px;font-size:.72rem;text-align:left;cursor:pointer}
+.quick-picker-option:hover,.quick-picker-option.active{background:var(--soft)}
+.quick-picker-option[hidden]{display:none}
+.quick-nature-option-name{font-weight:900;min-width:5.5em}
+.quick-nature-option-effect{margin-left:auto;font-size:.68rem;font-weight:900;white-space:nowrap}
+.quick-nature-up{color:#d12b2b}.quick-nature-down{color:#2468c9}.quick-nature-neutral{color:var(--muted)}
+
+
 </style>
 </head>
 <body>
 <main class="app">
 <header><h1>ポケモンチャンピオンズ 対戦データベース</h1></header>
-<div class="controls"><div class="top-search-wrap"><input id="search" type="search" placeholder="ポケモン名を入力" autocomplete="off"><div id="searchSuggestions" class="search-suggestions" hidden></div></div><button id="listToggle" class="list-toggle" type="button" aria-expanded="false" aria-controls="list">ポケモン一覧を表示</button><button id="damagePageToggle" class="list-toggle damage-page-toggle" type="button">ダメージ計算</button><button id="speedPageToggle" class="list-toggle speed-page-toggle" type="button">素早さ比較</button></div>
+<div class="controls"><div class="top-search-wrap"><input id="search" type="search" placeholder="ポケモン名を入力" autocomplete="off"><div id="searchSuggestions" class="search-suggestions" hidden></div></div><button id="listToggle" class="list-toggle" type="button" aria-expanded="false" aria-controls="list">ポケモン一覧を表示</button><button id="damagePageToggle" class="list-toggle damage-page-toggle" type="button">ダメージ計算</button><button id="speedPageToggle" class="list-toggle speed-page-toggle" type="button">素早さ比較</button><button id="quickPageToggle" class="list-toggle quick-page-toggle" type="button">対戦用簡易計算</button></div>
 <div id="layout" class="layout"><aside id="list" class="sidebar" hidden></aside><section id="detail" class="detail"></section></div>
 </main>
 <div id="pokemonPickerModal" class="pokemon-modal" hidden aria-hidden="true"><div class="pokemon-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="pokemonPickerTitle"><div class="pokemon-modal-head"><h2 id="pokemonPickerTitle" class="pokemon-modal-title">ポケモンを選択</h2><button id="pokemonPickerClose" class="pokemon-modal-close" type="button">閉じる</button></div><div id="pokemonPickerFilters" class="pokemon-modal-filters"></div><div id="pokemonPickerList" class="pokemon-modal-list"></div></div></div>
@@ -660,7 +694,7 @@ function filterPokemonList(q,kana){const nq=norm(q);return POKEMON.filter(p=>!is
 let activeDetailTab="overview";
 let speedState={left:POKEMON[0]?.name||"",right:POKEMON[1]?.name||POKEMON[0]?.name||"",leftPoints:0,rightPoints:0,leftNature:"neutral",rightNature:"neutral",leftRank:0,rightRank:0,leftAbility:"",rightAbility:"",leftItem:"none",rightItem:"none",leftStatus:"none",rightStatus:"none",leftAbilityActive:false,rightAbilityActive:false,leftAbilityCount:0,rightAbilityCount:0,leftCopiedRank:0,rightCopiedRank:0,weather:"none",terrain:"none",leftTailwind:false,rightTailwind:false,trickRoom:false};
 let damageState={attacker:POKEMON[0]?.name||"",defender:POKEMON[1]?.name||POKEMON[0]?.name||"",move:"",atkPoints:0,defHpPoints:0,defPoints:0,atkBoost:0,defBoost:0,atkCorrection:"1.0",defCorrection:"1.0",attackerAbility:"",defenderAbility:"",attackerItem:"none",defenderItem:"none",weather:"none",terrain:"none",battleFormat:"single",opponentCount:"2",gravity:false,critical:false,helpingHand:false,reflect:false,burn:false,stealthRock:false,spikes:0,conditionalAbilityActive:false,triggerAbilityActive:false};
-const layoutEl=document.getElementById("layout"),listEl=document.getElementById("list"),detailEl=document.getElementById("detail"),searchEl=document.getElementById("search"),searchSuggestionsEl=document.getElementById("searchSuggestions"),listToggleEl=document.getElementById("listToggle"),damagePageToggleEl=document.getElementById("damagePageToggle"),speedPageToggleEl=document.getElementById("speedPageToggle"),pokemonPickerModal=document.getElementById("pokemonPickerModal"),pokemonPickerFilters=document.getElementById("pokemonPickerFilters"),pokemonPickerList=document.getElementById("pokemonPickerList"),pokemonPickerClose=document.getElementById("pokemonPickerClose");
+const layoutEl=document.getElementById("layout"),listEl=document.getElementById("list"),detailEl=document.getElementById("detail"),searchEl=document.getElementById("search"),searchSuggestionsEl=document.getElementById("searchSuggestions"),listToggleEl=document.getElementById("listToggle"),damagePageToggleEl=document.getElementById("damagePageToggle"),speedPageToggleEl=document.getElementById("speedPageToggle"),quickPageToggleEl=document.getElementById("quickPageToggle"),pokemonPickerModal=document.getElementById("pokemonPickerModal"),pokemonPickerFilters=document.getElementById("pokemonPickerFilters"),pokemonPickerList=document.getElementById("pokemonPickerList"),pokemonPickerClose=document.getElementById("pokemonPickerClose");
 function hiraToKata(v){return String(v||"").replace(/[ぁ-ゖ]/g,ch=>String.fromCharCode(ch.charCodeAt(0)+0x60))}
 function norm(v){return hiraToKata(String(v||"").normalize("NFKC").toLowerCase()).replace(/[\s・ー_\-（）()]/g,"")}
 function searchable(p){return p.name}
@@ -2227,8 +2261,185 @@ function bindSpeedControls(){
   });
 }
 
+
+const QUICK_STORAGE_KEY="pokemonChampionsQuickPartyV1";
+const QUICK_POINT_TOTAL_MAX=66;
+const QUICK_NATURES={
+  neutral:{name:"まじめ",up:null,down:null},
+  lonely:{name:"さみしがり",up:"atk",down:"def"},
+  adamant:{name:"いじっぱり",up:"atk",down:"spa"},
+  naughty:{name:"やんちゃ",up:"atk",down:"spd"},
+  brave:{name:"ゆうかん",up:"atk",down:"spe"},
+  bold:{name:"ずぶとい",up:"def",down:"atk"},
+  impish:{name:"わんぱく",up:"def",down:"spa"},
+  lax:{name:"のうてんき",up:"def",down:"spd"},
+  relaxed:{name:"のんき",up:"def",down:"spe"},
+  modest:{name:"ひかえめ",up:"spa",down:"atk"},
+  mild:{name:"おっとり",up:"spa",down:"def"},
+  rash:{name:"うっかりや",up:"spa",down:"spd"},
+  quiet:{name:"れいせい",up:"spa",down:"spe"},
+  calm:{name:"おだやか",up:"spd",down:"atk"},
+  gentle:{name:"おとなしい",up:"spd",down:"def"},
+  careful:{name:"しんちょう",up:"spd",down:"spa"},
+  sassy:{name:"なまいき",up:"spd",down:"spe"},
+  timid:{name:"おくびょう",up:"spe",down:"atk"},
+  hasty:{name:"せっかち",up:"spe",down:"def"},
+  jolly:{name:"ようき",up:"spe",down:"spa"},
+  naive:{name:"むじゃき",up:"spe",down:"spd"}
+};
+function quickNatureMod(slot,key){const n=QUICK_NATURES[slot?.nature]||QUICK_NATURES.neutral;return n.up===key?"1.1":n.down===key?"0.9":"1.0"}
+function quickNormalizePoints(points){
+  const out={hp:0,atk:0,def:0,spa:0,spd:0,spe:0};let remaining=QUICK_POINT_TOTAL_MAX;
+  for(const key of Object.keys(out)){const value=Math.max(0,Math.min(32,Number(points?.[key])||0,remaining));out[key]=value;remaining-=value}
+  return out;
+}
+function quickNatureFromLegacyMods(mods){
+  if(!mods)return "neutral";const up=Object.keys(mods).find(k=>mods[k]==="1.1")||null;const down=Object.keys(mods).find(k=>mods[k]==="0.9")||null;
+  return Object.keys(QUICK_NATURES).find(k=>QUICK_NATURES[k].up===up&&QUICK_NATURES[k].down===down)||"neutral";
+}
+function quickNormalizeSlot(slot,index){
+  const fallback=quickDefaultSlot(index),merged={...fallback,...slot};merged.points=quickNormalizePoints(slot?.points);merged.nature=slot?.nature&&QUICK_NATURES[slot.nature]?slot.nature:quickNatureFromLegacyMods(slot?.mods);delete merged.mods;return merged;
+}
+function quickDefaultSlot(index){
+  const p=POKEMON.filter(x=>!isMegaPokemon(x))[index]||POKEMON.find(x=>!isMegaPokemon(x))||POKEMON[0];
+  const moves=damageMovesFor(p).slice(0,4).map(x=>x.name);
+  return {pokemon:p.name,points:{hp:0,atk:0,def:0,spa:0,spd:0,spe:0},nature:"neutral",ability:p.abilities?.[0]||"なし",item:"none",megaTarget:"",moves:[moves[0]||"",moves[1]||"",moves[2]||"",moves[3]||""]};
+}
+function loadQuickParty(){try{const v=JSON.parse(localStorage.getItem(QUICK_STORAGE_KEY)||"null");if(Array.isArray(v)&&v.length===6)return v.map(quickNormalizeSlot)}catch(e){}return Array.from({length:6},(_,i)=>quickDefaultSlot(i))}
+let quickState={tab:"battle",ownParty:loadQuickParty(),opponents:Array.from({length:6},(_,i)=>(POKEMON.filter(x=>!isMegaPokemon(x))[i]||POKEMON[0]).name),ownSlot:0,oppSlot:0,direction:"own",move:"",atkRank:0,defRank:0,battleFormat:"single",opponentCount:"2",ownMega:false,oppForm:"",weather:"none",reflect:false,ownKana:"all",oppKana:"all"};
+function quickBaseOptions(selected,kana="all"){
+  let list=POKEMON.filter(p=>!isMegaPokemon(p)&&matchesKana(p,kana));
+  const current=POKEMON.find(p=>p.name===selected&&!isMegaPokemon(p));
+  if(current&&!list.some(p=>p.name===current.name))list=[current,...list];
+  return list.map(p=>`<option value="${p.name}" ${p.name===selected?"selected":""}>${p.name}</option>`).join("")
+}
+function quickPokemonPickerHtml(selected,kind,index){
+  const id=`${kind}-${index}`;
+  const pokemon=POKEMON.filter(p=>!isMegaPokemon(p));
+  const kana=["all",...Object.keys(KANA_GROUPS)].map(v=>`<button class="filter-chip ${v==="all"?"active":""}" type="button" data-quick-picker-kana="${id}" data-value="${v}">${v==="all"?"すべて":v}</button>`).join("");
+  const options=pokemon.map(p=>`<button class="quick-picker-option ${p.name===selected?"active":""}" type="button" data-quick-pokemon-choice="${kind}" data-index="${index}" data-name="${p.name}" data-first-kana="${firstKana(p.name)}">${p.name}</button>`).join("");
+  return `<div class="quick-custom-picker" data-quick-picker="${id}"><button class="quick-picker-button" type="button" data-quick-picker-toggle="${id}">${selected}</button><div class="quick-picker-menu" data-quick-picker-menu="${id}" hidden><div class="quick-picker-kana">${kana}</div>${options}</div></div>`;
+}
+function quickNaturePickerHtml(selected,index){
+  const n=QUICK_NATURES[selected]||QUICK_NATURES.neutral;
+  const label=n.up?`${n.name}（${statLabels[n.up]}1.1倍・${statLabels[n.down]}0.9倍）`:`${n.name}（補正なし）`;
+  const options=Object.entries(QUICK_NATURES).map(([key,x])=>{
+    const effect=x.up?`<span class="quick-nature-option-effect"><span class="quick-nature-up">${statLabels[x.up]} 1.1倍</span>・<span class="quick-nature-down">${statLabels[x.down]} 0.9倍</span></span>`:`<span class="quick-nature-option-effect quick-nature-neutral">補正なし</span>`;
+    return `<button class="quick-picker-option ${key===selected?"active":""}" type="button" data-quick-nature-choice="${index}" data-value="${key}"><span class="quick-nature-option-name">${x.name}</span>${effect}</button>`;
+  }).join("");
+  return `<div class="quick-custom-picker" data-quick-picker="nature-${index}"><button class="quick-picker-button" type="button" data-quick-picker-toggle="nature-${index}">${label}</button><div class="quick-picker-menu" data-quick-picker-menu="nature-${index}" hidden>${options}</div></div>`;
+}
+function quickMoveOptions(p,selected){const ms=damageMovesFor(p);return `<option value="">技を選択</option>`+ms.map(x=>`<option value="${x.name}" ${x.name===selected?"selected":""}>${x.name}</option>`).join("")}
+function quickMegaForms(p){return megaFormsForDamage(p)}
+function quickDamageItemOptions(selected,p){
+  const base=Object.entries(DAMAGE_ITEMS).filter(([k])=>["none","choiceBand","choiceSpecs","lifeOrb","muscleBand","wiseGlasses","expertBelt","typeBoost","lightBall","resistBerry","ironBall"].includes(k)).map(([k,v])=>`<option value="${k}" ${selected===k?"selected":""}>もちもの：${k==="none"?"無し":v.name}</option>`).join("");
+  const mega=quickMegaForms(p).map(f=>`<option value="mega:${f.name}" ${selected===`mega:${f.name}`?"selected":""}>もちもの：${f.name}用メガストーン</option>`).join("");
+  return base+mega;
+}
+function quickSlotHtml(slot,i){
+  const p=POKEMON.find(x=>x.name===slot.pokemon)||POKEMON.find(x=>!isMegaPokemon(x))||POKEMON[0];
+  const total=Object.values(slot.points||{}).reduce((a,b)=>a+Number(b||0),0);
+  return `<div class="quick-slot"><div class="quick-slot-title"><span>${i+1}匹目</span><span class="point-total ${total>=QUICK_POINT_TOTAL_MAX?"at-limit":""}" style="margin:0;padding:3px 6px">合計 ${total}/${QUICK_POINT_TOTAL_MAX}</span></div>
+  ${quickPokemonPickerHtml(p.name,"party",i)}
+  <div class="quick-mini-grid">${["hp","atk","def","spa","spd","spe"].map(k=>{const current=Number(slot.points?.[k]||0),other=total-current,max=Math.min(32,QUICK_POINT_TOTAL_MAX-other);return `<div class="quick-mini-field"><label>${statLabels[k]}</label><input type="number" min="0" max="${max}" value="${current}" ${total>=QUICK_POINT_TOTAL_MAX&&current===0?"disabled":""} data-quick-party="${i}" data-field="point" data-key="${k}"></div>`}).join("")}</div>
+  <div class="quick-mini-field"><label>性格（能力補正）</label>${quickNaturePickerHtml(slot.nature||"neutral",i)}</div>
+  <select data-quick-party="${i}" data-field="ability">${(p.abilities||[]).map(a=>`<option value="${a}" ${slot.ability===a?"selected":""}>特性：${a}</option>`).join("")}</select>
+  <select data-quick-party="${i}" data-field="item">${quickDamageItemOptions(slot.item,p)}</select>
+  <div class="quick-moves">${[0,1,2,3].map(m=>`<select data-quick-party="${i}" data-field="move" data-key="${m}">${quickMoveOptions(p,slot.moves?.[m]||"")}</select>`).join("")}</div></div>`;
+}
+function quickPartyHtml(){return `<section class="quick-panel"><h3 class="quick-subtitle">自分のパーティー登録</h3><div class="quick-note">能力ポイントは各能力最大32、6能力合計66まで。合計66に達すると、それ以上は追加できません。ポケモンの五十音検索は各選択欄を開くと表示されます。持ち物にメガストーンを登録すると、対戦画面ではメガシンカON/OFFだけで形態が決まります。</div><div class="quick-party-grid">${quickState.ownParty.map(quickSlotHtml).join("")}</div><div class="quick-actions" style="margin-top:8px"><button class="quick-btn" type="button" data-quick-action="save">登録内容を保存</button><button class="quick-btn" type="button" data-quick-action="resetParty">初期化</button></div></section>`}
+function quickOpponentHtml(){return `<section class="quick-panel"><h3 class="quick-subtitle">相手の6匹を登録</h3><div class="quick-note">ポケモンの五十音検索は各選択欄を開くと表示されます。</div><div class="quick-party-grid">${quickState.opponents.map((name,i)=>`<div class="quick-slot"><div class="quick-slot-title">${i+1}匹目</div>${quickPokemonPickerHtml(name,"opponent",i)}</div>`).join("")}</div></section>`}
+function quickResolvedOwnPokemon(){
+  const slot=quickState.ownParty[quickState.ownSlot]||quickState.ownParty[0];const base=POKEMON.find(p=>p.name===slot.pokemon)||POKEMON[0];
+  if(quickState.ownMega&&String(slot.item).startsWith("mega:"))return POKEMON.find(p=>p.name===String(slot.item).slice(5))||base;
+  return base;
+}
+function quickResolvedOpponent(){return POKEMON.find(p=>p.name===(quickState.oppForm||quickState.opponents[quickState.oppSlot]))||POKEMON[0]}
+function quickExtractResult(html){
+  const main=html.match(/与ダメージ量 (\d+)～(\d+)/);const pct=html.match(/与ダメージ割合<\/span><strong>([^<]+)/);const ko=html.match(/判定<\/span><strong>([^<]+)/);
+  return {damage:main?`${main[1]}～${main[2]}`:"—",pct:pct?pct[1]:"—",ko:ko?ko[1]:"—"};
+}
+function quickCalcOnce(cfg){
+  const snapshot={...damageState};Object.assign(damageState,cfg);
+  const p=POKEMON.find(x=>x.name===cfg.attacker)||POKEMON[0];const html=damageCalcHtml(p);const result=quickExtractResult(html);
+  Object.assign(damageState,snapshot);return result;
+}
+function quickCommonCfg(attacker,defender,move){
+  return {attacker:attacker.name,defender:defender.name,move,atkBoost:quickState.atkRank,defBoost:quickState.defRank,attackerAbility:attacker.abilities?.[0]||"なし",defenderAbility:defender.abilities?.[0]||"なし",attackerItem:"none",defenderItem:"none",weather:quickState.weather,terrain:"none",battleFormat:quickState.battleFormat,opponentCount:quickState.opponentCount,gravity:false,critical:false,helpingHand:false,reflect:quickState.reflect,burn:false,stealthRock:false,spikes:0,conditionalAbilityActive:false,triggerAbilityActive:false};
+}
+function quickResultData(){
+  const ownSlot=quickState.ownParty[quickState.ownSlot]||quickState.ownParty[0],own=quickResolvedOwnPokemon(),opp=quickResolvedOpponent();
+  let rows=[],move=quickState.move;
+  if(quickState.direction==="own"){
+    if(!move||!(ownSlot.moves||[]).includes(move))move=(ownSlot.moves||[]).find(Boolean)||damageMovesFor(own)[0]?.name||"";
+    const meta=moveMeta(move),physical=meta.category==="物理",defKey=["サイコショック","サイコブレイク","しんぴのつるぎ"].includes(move)?"def":physical?"def":"spd";
+    const cfg=quickCommonCfg(own,opp,move);cfg.atkPoints=Number(ownSlot.points?.[physical?"atk":"spa"]||0);cfg.atkCorrection=quickNatureMod(ownSlot,physical?"atk":"spa");cfg.attackerAbility=ownSlot.ability||own.abilities?.[0]||"なし";cfg.attackerItem=String(ownSlot.item).startsWith("mega:")?"none":ownSlot.item;
+    for(const hpPts of [0,32])for(const d of [{label:"無振り",pts:0,mod:"1.0"},{label:"32振り",pts:32,mod:"1.0"},{label:"最高",pts:32,mod:"1.1"}]){
+      const r=quickCalcOnce({...cfg,defHpPoints:hpPts,defPoints:d.pts,defCorrection:d.mod});
+      rows.push({a:`登録値 ${finalStat(own,physical?"atk":"spa",cfg.atkPoints,cfg.atkCorrection)}`,b:`HP${hpPts===0?"無振り":"32振り"}・${statLabels[defKey]}${d.label}`,r});
+    }
+  }else{
+    if(!move)move=damageMovesFor(opp)[0]?.name||"";const meta=moveMeta(move),physical=meta.category==="物理",atkKey=physical?"atk":"spa",defKey=["サイコショック","サイコブレイク","しんぴのつるぎ"].includes(move)?"def":physical?"def":"spd";
+    const cfg=quickCommonCfg(opp,own,move);cfg.defHpPoints=Number(ownSlot.points?.hp||0);cfg.defPoints=Number(ownSlot.points?.[defKey]||0);cfg.defCorrection=quickNatureMod(ownSlot,defKey);cfg.defenderAbility=ownSlot.ability||own.abilities?.[0]||"なし";cfg.defenderItem=String(ownSlot.item).startsWith("mega:")?"none":ownSlot.item;
+    for(const a of [{label:"無振り",pts:0,mod:"1.0"},{label:"32振り",pts:32,mod:"1.0"},{label:"最高",pts:32,mod:"1.1"}]){
+      const r=quickCalcOnce({...cfg,atkPoints:a.pts,atkCorrection:a.mod});
+      rows.push({a:`${statLabels[atkKey]}${a.label}`,b:`登録耐久 HP${cfg.defHpPoints}・${statLabels[defKey]}${cfg.defPoints}`,r});
+    }
+  }
+  return {rows,move,own,opp,ownSlot};
+}
+function quickSpeedHtml(ownSlot,own,opp){
+  const ownSpeed=finalStat(own,"spe",Number(ownSlot.points?.spe||0),quickNatureMod(ownSlot,"spe"));
+  const vals=[["無振り",finalStat(opp,"spe",0,"1.0")],["32振り",finalStat(opp,"spe",32,"1.0")],["最速",finalStat(opp,"spe",32,"1.1")]];
+  return `<section class="quick-panel"><h3 class="quick-subtitle">素早さ比較</h3><div class="quick-speed-box"><div class="quick-speed-cell">自分（登録値）<strong>${ownSpeed}</strong></div>${vals.map(([l,v])=>`<div class="quick-speed-cell">相手 ${l}<strong>${v}</strong><span class="quick-note">${ownSpeed>v?"自分が先":ownSpeed<v?"相手が先":"同速"}</span></div>`).join("")}</div></section>`;
+}
+function quickBattleHtml(){
+  const data=quickResultData(),ownSlot=data.ownSlot,oppBase=POKEMON.find(p=>p.name===quickState.opponents[quickState.oppSlot])||POKEMON[0],oppForms=quickMegaForms(oppBase);
+  const ownMegaAvailable=String(ownSlot.item).startsWith("mega:");
+  const moveOptions=quickState.direction==="own"?(ownSlot.moves||[]).filter(Boolean).map(m=>`<option value="${m}" ${m===data.move?"selected":""}>${m}</option>`).join(""):quickMoveOptions(data.opp,data.move);
+  return `<section class="quick-panel"><div class="quick-battle-grid"><div class="quick-battle-card"><h3 class="quick-subtitle">自分</h3><select data-quick-battle="ownSlot">${quickState.ownParty.map((s,i)=>`<option value="${i}" ${i===quickState.ownSlot?"selected":""}>${i+1}. ${s.pokemon}</option>`).join("")}</select>${ownMegaAvailable?`<div class="quick-segment"><button class="quick-btn ${!quickState.ownMega?"active":""}" data-quick-mega="off">通常</button><button class="quick-btn ${quickState.ownMega?"active":""}" data-quick-mega="on">メガシンカ</button></div>`:""}<div class="quick-note">登録済み能力ポイント・性格・特性・持ち物・技を使用</div></div>
+  <div class="quick-battle-card"><h3 class="quick-subtitle">相手</h3><select data-quick-battle="oppSlot">${quickState.opponents.map((n,i)=>`<option value="${i}" ${i===quickState.oppSlot?"selected":""}>${i+1}. ${n}</option>`).join("")}</select>${oppForms.length?`<div class="quick-segment"><button class="quick-btn ${!quickState.oppForm?"active":""}" data-quick-opp-form="">通常</button>${oppForms.map(f=>`<button class="quick-btn ${quickState.oppForm===f.name?"active":""}" data-quick-opp-form="${f.name}">${f.name.endsWith(" X")?"メガX":f.name.endsWith(" Y")?"メガY":"メガ"}</button>`).join("")}</div>`:""}<div class="quick-note">能力ポイント・補正は不明なため候補を自動比較</div></div></div>
+  <div class="quick-toolbar" style="margin-top:8px"><div class="quick-segment"><button class="quick-btn ${quickState.direction==="own"?"active":""}" data-quick-direction="own">自分 → 相手</button><button class="quick-btn ${quickState.direction==="opp"?"active":""}" data-quick-direction="opp">相手 → 自分</button></div><select data-quick-battle="move" style="max-width:320px">${moveOptions}</select></div>
+  <div class="quick-battle-grid" style="margin-top:8px"><div class="quick-battle-card"><span class="quick-note">攻撃側ランク</span><div class="quick-rank-row"><button class="quick-btn" data-quick-rank="atk" data-step="-1">−</button><div class="quick-rank-value">${quickState.atkRank>0?"+":""}${quickState.atkRank}</div><button class="quick-btn" data-quick-rank="atk" data-step="1">＋</button></div></div><div class="quick-battle-card"><span class="quick-note">防御側ランク</span><div class="quick-rank-row"><button class="quick-btn" data-quick-rank="def" data-step="-1">−</button><div class="quick-rank-value">${quickState.defRank>0?"+":""}${quickState.defRank}</div><button class="quick-btn" data-quick-rank="def" data-step="1">＋</button></div></div></div>
+  <div class="quick-toolbar" style="margin-top:8px"><div class="quick-segment"><button class="quick-btn ${quickState.battleFormat==="single"?"active":""}" data-quick-format="single">シングル</button><button class="quick-btn ${quickState.battleFormat==="double"?"active":""}" data-quick-format="double">ダブル</button>${quickState.battleFormat==="double"?`<button class="quick-btn ${quickState.opponentCount==="1"?"active":""}" data-quick-count="1">相手1体</button><button class="quick-btn ${quickState.opponentCount==="2"?"active":""}" data-quick-count="2">相手2体</button>`:""}</div><div class="quick-segment"><select data-quick-battle="weather"><option value="none">天候なし</option><option value="sun" ${quickState.weather==="sun"?"selected":""}>晴れ</option><option value="rain" ${quickState.weather==="rain"?"selected":""}>雨</option><option value="sand" ${quickState.weather==="sand"?"selected":""}>砂</option><option value="snow" ${quickState.weather==="snow"?"selected":""}>雪</option></select><button class="quick-btn ${quickState.reflect?"active":""}" data-quick-action="reflect">壁</button></div></div></section>
+  <section class="quick-panel"><h3 class="quick-subtitle">${data.move} の結果一覧</h3><div class="quick-result-wrap"><table class="quick-result-table"><thead><tr><th>攻撃側</th><th>防御側</th><th>ダメージ</th><th>割合</th><th>判定</th></tr></thead><tbody>${data.rows.map(x=>`<tr><td>${x.a}</td><td>${x.b}</td><td>${x.r.damage}</td><td>${x.r.pct}</td><td class="quick-ko">${x.r.ko}</td></tr>`).join("")}</tbody></table></div><div class="quick-note" style="margin-top:6px">「最高」は能力ポイント32＋上昇補正1.1倍。自分側は登録値固定です。ランク・天候・壁・シングル／ダブル補正は一覧全体に即時反映します。</div></section>${quickSpeedHtml(ownSlot,data.own,data.opp)}`;
+}
+function quickCalcHtml(){return `<div class="quick-calculator"><div class="quick-toolbar"><div class="quick-segment"><button class="quick-btn ${quickState.tab==="battle"?"active":""}" data-quick-tab="battle">対戦中</button><button class="quick-btn ${quickState.tab==="party"?"active":""}" data-quick-tab="party">自分のパーティー</button><button class="quick-btn ${quickState.tab==="opponent"?"active":""}" data-quick-tab="opponent">相手6匹</button></div></div>${quickState.tab==="party"?quickPartyHtml():quickState.tab==="opponent"?quickOpponentHtml():quickBattleHtml()}</div>`}
+function bindQuickControls(){
+  detailEl.querySelectorAll("[data-quick-tab]").forEach(b=>b.addEventListener("click",()=>{quickState.tab=b.dataset.quickTab;renderDetail()}));
+  detailEl.querySelectorAll("[data-quick-picker-toggle]").forEach(button=>button.addEventListener("click",event=>{event.stopPropagation();const id=button.dataset.quickPickerToggle;detailEl.querySelectorAll("[data-quick-picker-menu]").forEach(menu=>{menu.hidden=menu.dataset.quickPickerMenu!==id||!menu.hidden});}));
+  detailEl.querySelectorAll("[data-quick-picker-kana]").forEach(button=>button.addEventListener("click",event=>{event.stopPropagation();const id=button.dataset.quickPickerKana,kana=button.dataset.value,menu=detailEl.querySelector(`[data-quick-picker-menu="${id}"]`);menu?.querySelectorAll("[data-quick-picker-kana]").forEach(x=>x.classList.toggle("active",x===button));menu?.querySelectorAll("[data-quick-pokemon-choice]").forEach(x=>x.hidden=!(kana==="all"||(KANA_GROUPS[kana]||"").includes(x.dataset.firstKana)));}));
+  detailEl.querySelectorAll("[data-quick-pokemon-choice]").forEach(button=>button.addEventListener("click",()=>{const kind=button.dataset.quickPokemonChoice,i=Number(button.dataset.index),name=button.dataset.name;if(kind==="party"){const slot=quickState.ownParty[i];slot.pokemon=name;const p=POKEMON.find(x=>x.name===name)||POKEMON[0];slot.ability=p.abilities?.[0]||"なし";slot.item="none";slot.moves=damageMovesFor(p).slice(0,4).map(x=>x.name);while(slot.moves.length<4)slot.moves.push("")}else{quickState.opponents[i]=name;quickState.oppForm=""}renderDetail();}));
+  detailEl.querySelectorAll("[data-quick-nature-choice]").forEach(button=>button.addEventListener("click",()=>{quickState.ownParty[Number(button.dataset.quickNatureChoice)].nature=button.dataset.value;renderDetail();}));
+  detailEl.querySelectorAll("[data-quick-party]").forEach(el=>el.addEventListener("change",()=>{
+    const i=Number(el.dataset.quickParty),slot=quickState.ownParty[i],field=el.dataset.field,key=el.dataset.key;
+    if(field==="pokemon"){slot.pokemon=el.value;const p=POKEMON.find(x=>x.name===el.value)||POKEMON[0];slot.ability=p.abilities?.[0]||"なし";slot.item="none";slot.moves=damageMovesFor(p).slice(0,4).map(x=>x.name);while(slot.moves.length<4)slot.moves.push("")}
+    else if(field==="point"){
+      const otherTotal=Object.entries(slot.points||{}).reduce((sum,[k,v])=>sum+(k===key?0:Number(v)||0),0);
+      slot.points[key]=Math.max(0,Math.min(32,QUICK_POINT_TOTAL_MAX-otherTotal,Number(el.value)||0));
+    }
+    else if(field==="nature")slot.nature=el.value;
+    else if(field==="ability")slot.ability=el.value;
+    else if(field==="item")slot.item=el.value;
+    else if(field==="move")slot.moves[Number(key)]=el.value;
+    renderDetail();
+  }));
+  detailEl.querySelectorAll("[data-quick-battle]").forEach(el=>el.addEventListener("change",()=>{const k=el.dataset.quickBattle;if(k==="ownSlot"){quickState.ownSlot=Number(el.value);quickState.ownMega=false;quickState.move=""}else if(k==="oppSlot"){quickState.oppSlot=Number(el.value);quickState.oppForm="";quickState.move=""}else quickState[k]=el.value;renderDetail()}));
+  detailEl.querySelectorAll("[data-quick-direction]").forEach(b=>b.addEventListener("click",()=>{quickState.direction=b.dataset.quickDirection;quickState.move="";quickState.atkRank=0;quickState.defRank=0;renderDetail()}));
+  detailEl.querySelectorAll("[data-quick-mega]").forEach(b=>b.addEventListener("click",()=>{quickState.ownMega=b.dataset.quickMega==="on";renderDetail()}));
+  detailEl.querySelectorAll("[data-quick-opp-form]").forEach(b=>b.addEventListener("click",()=>{quickState.oppForm=b.dataset.quickOppForm;renderDetail()}));
+  detailEl.querySelectorAll("[data-quick-rank]").forEach(b=>b.addEventListener("click",()=>{const k=b.dataset.quickRank==="atk"?"atkRank":"defRank";quickState[k]=Math.max(-6,Math.min(6,quickState[k]+Number(b.dataset.step)));renderDetail()}));
+  detailEl.querySelectorAll("[data-quick-format]").forEach(b=>b.addEventListener("click",()=>{quickState.battleFormat=b.dataset.quickFormat;renderDetail()}));
+  detailEl.querySelectorAll("[data-quick-count]").forEach(b=>b.addEventListener("click",()=>{quickState.opponentCount=b.dataset.quickCount;renderDetail()}));
+  detailEl.querySelectorAll("[data-quick-action]").forEach(b=>b.addEventListener("click",()=>{const a=b.dataset.quickAction;if(a==="save"){localStorage.setItem(QUICK_STORAGE_KEY,JSON.stringify(quickState.ownParty));alert("自分のパーティーを保存しました。")}else if(a==="resetParty"){quickState.ownParty=Array.from({length:6},(_,i)=>quickDefaultSlot(i));localStorage.removeItem(QUICK_STORAGE_KEY);renderDetail()}else if(a==="reflect"){quickState.reflect=!quickState.reflect;renderDetail()}}));
+}
+
 function renderDetail(){
   const p=POKEMON.find(x=>x.name===selected)||POKEMON[0];if(!p)return;
+  if(viewMode==="quick"){
+    detailEl.innerHTML=`<div class="head"><div><h2 class="name">対戦用簡易計算</h2><div class="help">自分は登録済みの実数値、相手は不明な配分候補を一覧で比較します。</div></div><button id="quickBackButton" class="list-toggle" type="button">ポケモン検索へ戻る</button></div>${quickCalcHtml()}<div class="footer">ポケモンチャンピオンズ専用。テラスタル項目はありません。メガシンカは自分の持ち物登録、相手の形態切り替えに連動します。</div>`;
+    document.getElementById("quickBackButton")?.addEventListener("click",()=>{viewMode="database";render()});bindQuickControls();return;
+  }
   if(viewMode==="speed"){
     detailEl.innerHTML=`<div class="head"><div><h2 class="name">素早さ比較</h2><div class="help">ポケモンチャンピオンズ専用。能力ポイントは0～32で設定できます。</div></div><button id="speedBackButton" class="list-toggle" type="button">ポケモン検索へ戻る</button></div>${speedCalcHtml()}<div class="footer">能力補正・能力ポイント・ランク・特性・持ち物・状態異常・天候・フィールド・おいかぜ・トリックルームを反映します。</div>`;
     document.getElementById("speedBackButton")?.addEventListener("click",()=>{viewMode="database";render()});bindSpeedControls();return;
@@ -2278,10 +2489,11 @@ function renderDetail(){
 }
 function setListOpen(open){listOpen=Boolean(open);listEl.hidden=!listOpen;layoutEl.classList.toggle("list-open",listOpen);listToggleEl.setAttribute("aria-expanded",String(listOpen));listToggleEl.textContent=listOpen?"ポケモン一覧を閉じる":"ポケモン一覧を表示"}
 function updateViewControls(){
-  const damageMode=viewMode==="damage",speedMode=viewMode==="speed",toolMode=damageMode||speedMode;
+  const damageMode=viewMode==="damage",speedMode=viewMode==="speed",quickMode=viewMode==="quick",toolMode=damageMode||speedMode||quickMode;
   searchEl.hidden=toolMode;listToggleEl.hidden=toolMode;
-  damagePageToggleEl.textContent=damageMode?"ポケモン検索へ戻る":"ダメージ計算";damagePageToggleEl.classList.toggle("active",damageMode);damagePageToggleEl.hidden=speedMode;
-  speedPageToggleEl.textContent=speedMode?"ポケモン検索へ戻る":"素早さ比較";speedPageToggleEl.classList.toggle("active",speedMode);speedPageToggleEl.hidden=damageMode;
+  damagePageToggleEl.textContent=damageMode?"ポケモン検索へ戻る":"ダメージ計算";damagePageToggleEl.classList.toggle("active",damageMode);damagePageToggleEl.hidden=speedMode||quickMode;
+  speedPageToggleEl.textContent=speedMode?"ポケモン検索へ戻る":"素早さ比較";speedPageToggleEl.classList.toggle("active",speedMode);speedPageToggleEl.hidden=damageMode||quickMode;
+  quickPageToggleEl.textContent=quickMode?"ポケモン検索へ戻る":"対戦用簡易計算";quickPageToggleEl.classList.toggle("active",quickMode);quickPageToggleEl.hidden=damageMode||speedMode;
   if(toolMode){setListOpen(false);closeSearchSuggestions()}
 }
 function render(){updateViewControls();if(viewMode==="database")renderList();renderDetail()}
@@ -2304,5 +2516,7 @@ function toggleDamagePage(){
 if(damagePageToggleEl){damagePageToggleEl.addEventListener("click",event=>{event.preventDefault();toggleDamagePage()})}
 function toggleSpeedPage(){viewMode=viewMode==="speed"?"database":"speed";render();requestAnimationFrame(()=>detailEl.scrollIntoView({behavior:"smooth",block:"start"}))}
 if(speedPageToggleEl){speedPageToggleEl.addEventListener("click",event=>{event.preventDefault();toggleSpeedPage()})}
+function toggleQuickPage(){viewMode=viewMode==="quick"?"database":"quick";render();requestAnimationFrame(()=>detailEl.scrollIntoView({behavior:"smooth",block:"start"}))}
+if(quickPageToggleEl){quickPageToggleEl.addEventListener("click",event=>{event.preventDefault();toggleQuickPage()})}
 setListOpen(false);render();
 </script></body></html>
